@@ -5,6 +5,7 @@
 #include <memory>
 #include "graphics.h"
 #include "cpu.h"
+#include "memory.h"
 
 class Emulator {
     public:
@@ -14,6 +15,10 @@ class Emulator {
     private:
         std::unique_ptr<Graphics> graphics;
         std::unique_ptr<CPU> cpu;
+        // add cartridge
+        // add timer
+        // add memory
+        std::unique_ptr<Memory> memory;
 };
 
 #endif

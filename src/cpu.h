@@ -17,6 +17,8 @@ class CPU {
         // Flags
         FlagRegister f;
 
+        void opcodeLoadR8N8(Register &r);
+        void opcodeLoadR16N16(RegisterPair &rp);
 };
 
 #endif
