@@ -9,7 +9,9 @@ class Register {
         ~Register() = default;
         void set(uint8_t value);
         uint8_t get();
-    private:
+        void increment();
+        void decrement();
+    protected:
         uint8_t value;
 };
 
@@ -29,6 +31,11 @@ class RegisterPair {
         RegisterPair(Register &high, Register &low);
         ~RegisterPair() = default;
         void set(uint16_t value);
+        uint16_t get();
+        uint8_t getHigh();
+        uint8_t getLow();
+        void increment();
+        void decrement();
     private:
         Register &high;
         Register &low;
@@ -38,6 +45,9 @@ class WordRegister {
     public:
         WordRegister() = default;
         ~WordRegister() = default;
+        void set(uint16_t value);
+        void increment();
+        uint16_t get();
     private:
         uint16_t value;
 };

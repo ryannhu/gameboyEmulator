@@ -2,9 +2,7 @@
 
 Memory::Memory() {
     // initialize memory
-    for (int i = 0; i < 0xFFFF; i++) {
-        memory[i] = 0;
-    }
+
 }
 
 

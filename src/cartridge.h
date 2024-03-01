@@ -24,7 +24,7 @@ class Cartridge {
     private:
         string filename;
         uint32_t romSize;
-        vector<uint8_t> memory;
+        vector<uint8_t> romData;
         RomHeader *Header;
 
 };
