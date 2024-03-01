@@ -6,7 +6,6 @@ enable_testing()
 
 find_package(SDL2 REQUIRED)
 
-
 aux_source_directory(src SRC_LIST)
 
 add_executable(gbEmulator ${SRC_LIST})
