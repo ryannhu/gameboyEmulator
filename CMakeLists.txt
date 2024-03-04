@@ -10,6 +10,14 @@ aux_source_directory(src SRC_LIST)
 
 add_executable(gbEmulator ${SRC_LIST})
 
+# Set the compile options to include the sanitizer
+set(SANITIZE_FLAGS "-fsanitize=address -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_FLAGS}")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_FLAGS}")
+# If using Clang, uncomment the following line to link the sanitizer as well
+# set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+
+target_include_directories(gbEmulator PRIVATE ${SDL2_INCLUDE_DIRS})
 target_link_libraries(gbEmulator ${SDL2_LIBRARIES})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})

@@ -97,6 +97,7 @@ void CPU::opcodeLoadN16A() {
     pc.increment();
     address |= emulator.memory->read(pc.get()) << 8;
     pc.increment();
+    std::cout << "address: " << (int) address << std::endl;
     emulator.memory->write(address, a.get());
 }
 
@@ -113,38 +114,39 @@ void CPU::opcodeLoadAN16() {
     a.set(emulator.memory->read(address));
 }
 
-void CPU::LDHN16A() {
+void CPU::LoadHN16A() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
     address |= 0xFF00;
     emulator.memory->write(address, a.get());
 }
 
-void CPU::LDHCA() {
+void CPU::LoadHCA() {
     uint8_t offset = c.get();
     uint16_t address = 0xFF00 + offset;
     emulator.memory->write(address, a.get());
 }
 
-void CPU::LDHAN16() {
+void CPU::LoadHAN16() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
     address |= 0xFF00;
     a.set(emulator.memory->read(address));
 }
 
-void CPU::LDHAC() {
+void CPU::LoadHAC() {
     uint8_t offset = c.get();
     uint16_t address = 0xFF00 + offset;
     a.set(emulator.memory->read(address));
 }
 
-void CPU::LDHLIA() {
+void CPU::LoadHLIA() {
     opcodeLoadHLR8(a);
     hl.increment();
 }
 
 void CPU::opcodeLoadHLDA() {
+    std::cout << (int) a.get() << (int) hl.get() << std::endl;
     opcodeLoadR8HL(a);
     hl.decrement();
 }
@@ -218,6 +220,32 @@ void CPU::opcodeDecR16(RegisterPair &rp) {
     rp.decrement();
 }
 
+void CPU::opcodeIncHL() {
+    uint8_t value = emulator.memory->read(hl.get());
+    value++;
+    emulator.memory->write(hl.get(), value);
+    f.setZeroFlag(value == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag((value & 0x0F) == 0);
+}
+
+void CPU::opcodeDecHL() {
+    uint8_t value = emulator.memory->read(hl.get());
+    value--;
+    emulator.memory->write(hl.get(), value);
+    f.setZeroFlag(value == 0);
+    f.setSubtractFlag(true);
+    f.setHalfCarryFlag((value & 0x0F) == 0x0F);
+}
+
+void CPU::opcodeIncSP() {
+    sp.increment();
+}
+
+void CPU::opcodeDecSP() {
+    sp.decrement();
+}
+
 void CPU::opcodeJpN16() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
@@ -264,6 +292,10 @@ void CPU::opcodeXorHL() {
     f.setCarryFlag(false);
 }
 
+
+void CPU::opcodeDI() {
+    // disable interrupts TODO
+}
 
 
 void CPU::unimplementedOpcode() {

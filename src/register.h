@@ -51,6 +51,7 @@ class WordRegister {
         ~WordRegister() = default;
         void set(uint16_t value);
         void increment();
+        void decrement();
         uint16_t get();
     private:
         uint16_t value;

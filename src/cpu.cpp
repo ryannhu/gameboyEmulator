@@ -6,7 +6,9 @@ CPU::CPU(Emulator &emulator) :
     bc(b, c),
     de(d, e),
     hl(h, l),
-    emulator(emulator) {}
+    emulator(emulator) {
+        pc.set(0x100);
+    }
 
 
 void CPU::executeInstruction() {
@@ -106,8 +108,7 @@ void CPU::executeInstruction() {
             opcodeAddR16R16(hl, de);
             break;
         case 0x1A: // LD A, (DE)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadAR16(de);
             break;
         case 0x1B: // DEC DE
             opcodeDecR16(de);
@@ -133,8 +134,7 @@ void CPU::executeInstruction() {
             opcodeLoadR16N16(hl);
             break;
         case 0x22: // LD (HL+), A
-            // TODO
-            unimplementedOpcode();
+            LoadHLIA();
             break;
         case 0x23: // INC HL
             opcodeIncR16(hl);
@@ -185,28 +185,22 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x31: // LD SP, 16
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadSPN16();
             break;
         case 0x32: // LD (HL-), A
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLDA();
             break;
         case 0x33: // INC SP
-            // TODO
-            unimplementedOpcode();
+            opcodeIncSP();
             break;
         case 0x34: // INC (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeIncHL();
             break;
         case 0x35: // DEC (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeDecHL();
             break;
         case 0x36: // LD (HL), 8
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLN8();
             break;
         case 0x37: // SCF   
             // TODO
@@ -221,12 +215,10 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x3A: // LD A, (HL-)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadAHLD();
             break;
         case 0x3B: // DEC SP
-            // TODO
-            unimplementedOpcode();
+            opcodeDecSP();
             break;
         case 0x3c: // INC A
             opcodeIncR8(a);
@@ -589,6 +581,13 @@ void CPU::executeInstruction() {
             opcodeJpN16();
             break;
         
+        case 0xEA: // LD (a16), A
+            opcodeLoadN16A();
+            break;
+
+        case 0xF3: // DI
+            opcodeDI();
+            break;
 
         default:
             unimplementedOpcode();

@@ -60,6 +60,10 @@ void WordRegister::increment() {
     value++;
 }
 
+void WordRegister::decrement() {
+    value--;
+}
+
 
 
 void FlagRegister::setZeroFlag(const bool value) {

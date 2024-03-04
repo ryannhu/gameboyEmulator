@@ -16,10 +16,16 @@ uint8_t Memory::read(uint16_t address) {
         return emulator->cartridge->read(address);
     }
     // if address is in VRAM range return graphics
-    return memory[address];
-
+    
+    std::cout << "Unimplemented read from memory at address: " << std::hex << address << std::endl;
+    return 0;
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
-    memory[address] = value;
+    if (address < 0x8000) {
+        emulator->cartridge->write(address, value);
+    }
+    std::cout << "Unimplemented write to memory at address: " << std::hex << address << std::endl;
+    
+    // memory[address] = value;
 }

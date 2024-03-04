@@ -39,12 +39,12 @@ class CPU {
         void opcodeLoadAR16(RegisterPair &rp);
         void opcodeLoadAN16();
 
-        void LDHN16A();
-        void LDHCA();
-        void LDHAN16();
-        void LDHAC();
+        void LoadHN16A();
+        void LoadHCA();
+        void LoadHAN16();
+        void LoadHAC();
 
-        void LDHLIA();
+        void LoadHLIA();
         void opcodeLoadHLDA();
         void opcodeLoadAHLD();
         void opcodeLoadAHLI();
@@ -57,6 +57,11 @@ class CPU {
         void opcodeDecR8(Register &r);
         void opcodeIncR16(RegisterPair &rp);
         void opcodeDecR16(RegisterPair &rp);
+        void opcodeIncHL();
+        void opcodeDecHL();
+        void opcodeIncSP();
+        void opcodeDecSP();
+
         void opcodeRLCA();
         void opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2);
         void opcodeAddR8R8(Register &r1, Register &r2);
@@ -69,6 +74,8 @@ class CPU {
         void opcodeXorHL();
         void opcodeJpN16();
         void opcodeJpHL();
+
+        void opcodeDI();
         
         void unimplementedOpcode();
 };
