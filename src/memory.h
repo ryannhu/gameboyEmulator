@@ -14,8 +14,11 @@ public:
     void write(uint16_t address, uint8_t value);
     
 private:
-    Emulator *emulator;
+    Emulator &emulator;
     std::vector<uint8_t> memory;
+    std::vector<uint8_t> workRam;
+    std::vector<uint8_t> highRam;
+    std::vector<uint8_t> oam;
 };
 
 #endif // MEMORY_H

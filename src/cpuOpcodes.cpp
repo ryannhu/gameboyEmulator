@@ -297,6 +297,27 @@ void CPU::opcodeDI() {
     // disable interrupts TODO
 }
 
+// register rotate instructions
+void CPU::opcodeRLCA() {
+    uint8_t value = a.get();
+    f.setCarryFlag(value & 0x80);
+    value = (value << 1) | (value >> 7);
+    a.set(value);
+    f.setZeroFlag(false);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+}
+
+void CPU::opcodeRRCA() {
+    uint8_t value = a.get();
+    f.setCarryFlag(value & 0x01);
+    value = (value >> 1) | (value << 7);
+    a.set(value);
+    f.setZeroFlag(false);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+}
+
 
 void CPU::unimplementedOpcode() {
     std::cerr << "Unimplemented opcode" << std::endl;

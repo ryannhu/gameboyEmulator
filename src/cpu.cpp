@@ -18,6 +18,19 @@ void CPU::executeInstruction() {
     auto opcode = emulator.memory->read(pc.get());
     if (true) {
         std::cout << "Executing Opcode: " << std::hex << (int)opcode << std::endl;
+        // print registers
+        std::cout << "Registers: " << std::endl;
+        std::cout << " A: " << std::hex << (int)a.get() ;
+        std::cout << " B: " << std::hex << (int)b.get() ;
+        std::cout << " C: " << std::hex << (int)c.get() ;
+        std::cout << " D: " << std::hex << (int)d.get() ;
+        std::cout << " E: " << std::hex << (int)e.get() ;
+        std::cout << " H: " << std::hex << (int)h.get() ;
+        std::cout << " L: " << std::hex << (int)l.get() ;
+        std::cout << " BC: " << std::hex << (int)bc.get();
+        std::cout << " DE: " << std::hex << (int)de.get();
+        std::cout << " HL: " << std::hex << (int)hl.get();
+        std::cout << " SP: " << std::hex << (int)sp.get() << std::endl; 
     }
     pc.increment();
     switch(opcode) {
@@ -42,9 +55,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(b);
             break;
         case 0x07: // RLCA
-            // TODO
-
-            unimplementedOpcode();
+            opcodeRLCA();
             break;
         case 0x08: // LD (a16), SP
             // TODO
@@ -579,6 +590,11 @@ void CPU::executeInstruction() {
             break;
         case 0xC3: // JP a16
             opcodeJpN16();
+            break;
+
+        case 0xE0: // LD (a8), A
+            // TODO
+            LoadHCA();
             break;
         
         case 0xEA: // LD (a16), A

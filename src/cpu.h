@@ -62,7 +62,10 @@ class CPU {
         void opcodeIncSP();
         void opcodeDecSP();
 
+
         void opcodeRLCA();
+        void opcodeRRCA();
+
         void opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2);
         void opcodeAddR8R8(Register &r1, Register &r2);
         void opcodeAdcR8R8(Register &r1, Register &r2);
