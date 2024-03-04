@@ -31,6 +31,28 @@ class CPU {
         void opcodeLoadR8N8(Register &r);
         void opcodeLoadR16R8(RegisterPair &rp, Register &r);
         void opcodeLoadR16N16(RegisterPair &rp);
+        void opcodeLoadHLN8();
+        void opcodeLoadHLR8(Register &r);
+        void opcodeLoadR8HL(Register &r);
+        void opcodeLoadR16A(RegisterPair &rp);
+        void opcodeLoadN16A();
+        void opcodeLoadAR16(RegisterPair &rp);
+        void opcodeLoadAN16();
+
+        void LDHN16A();
+        void LDHCA();
+        void LDHAN16();
+        void LDHAC();
+
+        void LDHLIA();
+        void opcodeLoadHLDA();
+        void opcodeLoadAHLD();
+        void opcodeLoadAHLI();
+        void opcodeLoadSPN16();
+        void opcodeLoadN16SP();
+        void opcodeLoadHLSPN8();
+        void opcodeLoadSPHL();
+
         void opcodeIncR8(Register &r);
         void opcodeDecR8(Register &r);
         void opcodeIncR16(RegisterPair &rp);
@@ -41,6 +63,13 @@ class CPU {
         void opcodeAdcR8R8(Register &r1, Register &r2);
         void opcodeAddR16N8(RegisterPair &rp);
         void opcodeSubR8R8(Register &r1, Register &r2);
+        void opcodeAndR8R8(Register &r1, Register &r2);
+        void opcodeOrR8R8(Register &r1, Register &r2);
+        void opcodeXorR8R8(Register &r1, Register &r2);
+        void opcodeXorHL();
+        void opcodeJpN16();
+        void opcodeJpHL();
+        
         void unimplementedOpcode();
 };
 

@@ -531,6 +531,64 @@ void CPU::executeInstruction() {
             // TODO
             unimplementedOpcode();
             break;
+        case 0x9A: // SBC A, D
+            // TODO
+            unimplementedOpcode();
+            break;
+        
+        case 0xA0: // AND A, B
+            opcodeAndR8R8(a, b);
+            break;
+        case 0xA1: // AND A, C
+            opcodeAndR8R8(a, c);
+            break;
+        case 0xA2: // AND A, D
+            opcodeAndR8R8(a, d);
+            break;
+        case 0xA3: // AND A, E
+            opcodeAndR8R8(a, e);
+            break;
+        case 0xA4: // AND A, H
+            opcodeAndR8R8(a, h);
+            break;
+        case 0xA5: // AND A, L
+            opcodeAndR8R8(a, l);
+            break;
+        case 0xA6: // AND A, (HL)
+            // TODO
+            unimplementedOpcode();
+            break;
+        case 0xA7: // AND A, A
+            opcodeAndR8R8(a, a);
+            break;
+        case 0xA8: // XOR A, B
+            opcodeXorR8R8(a, b);
+            break;
+        case 0xA9: // XOR A, C
+            opcodeXorR8R8(a, c);
+            break;
+        case 0xAA: // XOR A, D
+            opcodeXorR8R8(a, d);
+            break;
+        case 0xAB: // XOR A, E
+            opcodeXorR8R8(a, e);
+            break;
+        case 0xAC: // XOR A, H
+            opcodeXorR8R8(a, h);
+            break;
+        case 0xAD: // XOR A, L
+            opcodeXorR8R8(a, l);
+            break;
+        case 0xAE: // XOR A, (HL)
+            opcodeXorHL();
+            break;
+        case 0xAF: // XOR A, A
+            opcodeXorR8R8(a, a);
+            break;
+        case 0xC3: // JP a16
+            opcodeJpN16();
+            break;
+        
 
         default:
             unimplementedOpcode();
