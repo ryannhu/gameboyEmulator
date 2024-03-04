@@ -27,6 +27,7 @@ class CPU {
         Emulator &emulator;
 
         void fetchOpcode();
+        void opcodeLoadR8R8(Register &r1, Register &r2);
         void opcodeLoadR8N8(Register &r);
         void opcodeLoadR16R8(RegisterPair &rp, Register &r);
         void opcodeLoadR16N16(RegisterPair &rp);
@@ -34,6 +35,12 @@ class CPU {
         void opcodeDecR8(Register &r);
         void opcodeIncR16(RegisterPair &rp);
         void opcodeDecR16(RegisterPair &rp);
+        void opcodeRLCA();
+        void opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2);
+        void opcodeAddR8R8(Register &r1, Register &r2);
+        void opcodeAdcR8R8(Register &r1, Register &r2);
+        void opcodeAddR16N8(RegisterPair &rp);
+        void opcodeSubR8R8(Register &r1, Register &r2);
         void unimplementedOpcode();
 };
 

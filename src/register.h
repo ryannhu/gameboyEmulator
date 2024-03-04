@@ -19,6 +19,10 @@ class FlagRegister : public Register {
     public:
         FlagRegister() = default;
         ~FlagRegister() = default;
+        bool getZeroFlag();
+        bool getSubtractFlag();
+        bool getHalfCarryFlag();
+        bool getCarryFlag();
         void setZeroFlag(const bool value);
         void setSubtractFlag(bool value);
         void setHalfCarryFlag(bool value);

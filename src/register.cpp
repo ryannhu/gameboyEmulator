@@ -94,3 +94,19 @@ void FlagRegister::setCarryFlag(bool value) {
     }
 }
 
+bool FlagRegister::getZeroFlag() {
+    return value & 0x80;
+}
+
+bool FlagRegister::getSubtractFlag() {
+    return value & 0x40;
+}
+
+bool FlagRegister::getHalfCarryFlag() {
+    return value & 0x20;
+}
+
+bool FlagRegister::getCarryFlag() {
+    return value & 0x10;
+}
+

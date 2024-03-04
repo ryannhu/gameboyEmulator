@@ -4,24 +4,26 @@
 #include <iostream>
 #include <memory>
 #include "graphics.h"
-#include "memory.h"
+#include "cartridge.h"
 
 class CPU;
 
+class Memory;
+
 class Emulator {
     public:
-        Emulator();
+        Emulator(std::shared_ptr<Cartridge> cartridge);
         ~Emulator();
         void run();
+        void cycles(int cpuCycles);
         friend class CPU;
+        friend class Memory;
     private:
         std::unique_ptr<Graphics> graphics;
         std::unique_ptr<CPU> cpu;
-        // add cartridge
-        // add timer
-        // add memory
         std::unique_ptr<Memory> memory;
         std::shared_ptr<Cartridge> cartridge;
+        uint64_t ticks;
 };
 
 #endif
