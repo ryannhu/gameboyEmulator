@@ -7,8 +7,35 @@ CPU::CPU(Emulator &emulator) :
     de(d, e),
     hl(h, l),
     emulator(emulator) {
+        // set pc to 0x100 for now
         pc.set(0x100);
     }
+
+// void CPU::stackPush(uint8_t value) {
+//     sp.decrement();
+//     emulator.memory->write(sp.get(), value);
+// }
+
+// uint8_t CPU::stackPop() {
+//     uint8_t value = emulator.memory->read(sp.get());
+//     sp.increment();
+//     return value;
+// }
+
+// void CPU::stackPush(uint16_t value) {
+//     sp.decrement();
+//     emulator.memory->write(sp.get(), value >> 8);
+//     sp.decrement();
+//     emulator.memory->write(sp.get(), value & 0xFF);
+// }
+
+// uint16_t CPU::stackPop16() {
+//     uint16_t value = emulator.memory->read(sp.get());
+//     sp.increment();
+//     value |= emulator.memory->read(sp.get()) << 8;
+//     sp.increment();
+//     return value;
+// }
 
 
 void CPU::executeInstruction() {
@@ -58,16 +85,13 @@ void CPU::executeInstruction() {
             opcodeRLCA();
             break;
         case 0x08: // LD (a16), SP
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadN16SP();
             break;
         case 0x09: // ADD HL, BC
-            // TODO
-            unimplementedOpcode();
+            opcodeAddR16R16(hl, bc);
             break;
         case 0x0A: // LD A, (BC)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadAR16(bc);
             break;
         case 0x0B: // DEC BC
             opcodeDecR16(bc);
@@ -82,8 +106,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(c);
             break;
         case 0x0F: // RRCA
-            // TODO
-            unimplementedOpcode();
+            opcodeRRCA();
             break;
         case 0x10: // STOP 0
             // TODO
@@ -112,8 +135,7 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x18: // JR r8
-            // TODO
-            unimplementedOpcode();
+            opcodeJrN16();
             break;
         case 0x19: // ADD HL, DE
             opcodeAddR16R16(hl, de);
@@ -138,8 +160,7 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x20: // JR NZ, r8
-            // TODO
-            unimplementedOpcode();
+            opcodeJrCCN16(f.getZeroFlag() == 0);
             break;
         case 0x21: // LD HL, 16
             opcodeLoadR16N16(hl);
@@ -164,16 +185,13 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x28: // JR Z, r8
-            // TODO
-            unimplementedOpcode();
+            opcodeJrCCN16(f.getZeroFlag() == 1);
             break;
         case 0x29: // ADD HL, HL
-            // TODO
-            unimplementedOpcode();
+            opcodeAddR16R16(hl, hl);
             break;
         case 0x2A: // LD A, (HL+)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadAHLI();
             break;
         case 0x2B: // DEC HL
             opcodeDecR16(hl);
@@ -192,8 +210,7 @@ void CPU::executeInstruction() {
             unimplementedOpcode();
             break;
         case 0x30: // JR NC, r8
-            // TODO
-            unimplementedOpcode();
+            opcodeJrCCN16(f.getCarryFlag() == 0);
             break;
         case 0x31: // LD SP, 16
             opcodeLoadSPN16();
@@ -214,16 +231,14 @@ void CPU::executeInstruction() {
             opcodeLoadHLN8();
             break;
         case 0x37: // SCF   
-            // TODO
-            unimplementedOpcode();
+            f.setCarryFlag(true);
             break;
         case 0x38: // JR C, r8
-            // TODO
-            unimplementedOpcode();
+            opcodeJrCCN16(f.getCarryFlag() == 1);
             break;
         case 0x39: // ADD HL, SP
-            // TODO
-            unimplementedOpcode();
+        // TODO
+            // opcodeAddR16R16(hl, sp);
             break;
         case 0x3A: // LD A, (HL-)
             opcodeLoadAHLD();
@@ -263,8 +278,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(b, l);
             break;
         case 0x46: // LD B, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(b);
             break;
         case 0x47: // LD B, A
             opcodeLoadR8R8(b, a);
@@ -288,8 +302,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(c, l);
             break;
         case 0x4E: // LD C, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(c);
             break;
         case 0x4F: // LD C, A
             opcodeLoadR8R8(c, a);
@@ -313,8 +326,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(d, l);
             break;
         case 0x56: // LD D, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(d);
             break;
         case 0x57: // LD D, A
             opcodeLoadR8R8(d, a);
@@ -338,8 +350,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(e, l);
             break;
         case 0x5E: // LD E, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(e);
             break;
         case 0x5F: // LD E, A
             opcodeLoadR8R8(e, a);
@@ -363,8 +374,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(h, l);
             break;
         case 0x66: // LD H, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(h);
             break;
         case 0x67: // LD H, A   
             opcodeLoadR8R8(h, a);
@@ -388,43 +398,35 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(l, l);
             break;
         case 0x6E: // LD L, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(l);
             break;
         case 0x6F: // LD L, A
             opcodeLoadR8R8(l, a);
             break;
         case 0x70: // LD (HL), B
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(b);
             break;
         case 0x71: // LD (HL), C
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(c);
             break;
         case 0x72: // LD (HL), D
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(d);
             break;
         case 0x73: // LD (HL), E
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(e);
             break;
         case 0x74: // LD (HL), H
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(h);
             break;
         case 0x75: // LD (HL), L
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(l);
             break;
         case 0x76: // HALT
             // TODO
             unimplementedOpcode();
             break;
         case 0x77: // LD (HL), A
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadHLR8(a);
             break;
         case 0x78: // LD A, B
             opcodeLoadR8R8(a, b);
@@ -445,8 +447,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8R8(a, l);
             break;
         case 0x7E: // LD A, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeLoadR8HL(a);
             break;
         case 0x7F: // LD A, A
             opcodeLoadR8R8(a, a);
@@ -538,7 +539,26 @@ void CPU::executeInstruction() {
             // TODO
             unimplementedOpcode();
             break;
-        
+        case 0x9B: // SBC A, E
+            // TODO
+            unimplementedOpcode();
+            break;
+        case 0x9C: // SBC A, H
+            // TODO
+            unimplementedOpcode();
+            break;
+        case 0x9D: // SBC A, L
+            // TODO
+            unimplementedOpcode();
+            break;
+        case 0x9E: // SBC A, (HL)
+            // TODO
+            unimplementedOpcode();
+            break;
+        case 0x9F: // SBC A, A
+            // TODO
+            unimplementedOpcode();
+            break;
         case 0xA0: // AND A, B
             opcodeAndR8R8(a, b);
             break;
@@ -588,27 +608,91 @@ void CPU::executeInstruction() {
         case 0xAF: // XOR A, A
             opcodeXorR8R8(a, a);
             break;
+
+        case 0xC1: // POP BC
+            opcodePop(bc);
+            break;
+        case 0xC2: // JP NZ, a16
+            opcodeJpCCN16(f.getZeroFlag() == 0);
+            break; 
         case 0xC3: // JP a16
             opcodeJpN16();
+            break;
+        case 0xC4: // CALL NZ, a16
+            opcodeCallCCN16(f.getZeroFlag() == 0);
+            break;
+        case 0xC5: // PUSH BC
+            opcodePush(bc);
+            break;
+        case 0xC6: // ADD A, 8
+            opcodeAddR8N8(a);
+            break;
+        case 0xCD: // CALL a16
+            opcodeCallN16();
+            break;
+        
+        case 0xD1: // POP DE
+            opcodePop(de);
+            break;
+
+        case 0xD5: // PUSH DE
+            opcodePush(de);
             break;
 
         case 0xE0: // LD (a8), A
             // TODO
+            LoadHN16A();
+            break;
+
+        case 0xE1: // POP HL
+            opcodePop(hl);
+            break;
+        
+        case 0xE2: // LD (C), A
             LoadHCA();
+            break;
+
+        case 0xE5: // PUSH HL
+            opcodePush(hl);
             break;
         
         case 0xEA: // LD (a16), A
             opcodeLoadN16A();
             break;
 
+        case 0XF0: // LD A, (a8)
+            LoadHAN16();
+            break;
+
+        case 0xF1: // POP AF
+            opcodePop(af);
+            break;
+
+        case 0xF2: // LD A, (C)
+            LoadHAC();
+            break;
+
         case 0xF3: // DI
             opcodeDI();
             break;
 
+        case 0xF5: // PUSH AF
+            opcodePush(af);
+            break;
+
+        case 0xF8: // LD HL, SP+r8
+            opcodeLoadHLSPN8();
+            break;
+        case 0xF9: // LD SP, HL
+            opcodeLoadSPHL();
+            break;
+        
+        case 0xFA: // LD A, (a16)
+            opcodeLoadAN16();
+            break;
+
         default:
-            unimplementedOpcode();
-        
-        
+            unimplementedOpcode();  
     }
     return;
 }

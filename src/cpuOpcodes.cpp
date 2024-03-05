@@ -1,5 +1,6 @@
 #include "cpu.h"
 
+// add instructions
 
 void CPU::opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2) {
     uint32_t result = rp1.get() + rp2.get();
@@ -35,6 +36,17 @@ void CPU::opcodeAddR16N8(RegisterPair &rp) {
     f.setCarryFlag(result > 0xFF);
     f.setHalfCarryFlag((rp.get() & 0x0F) + (n & 0x0F) > 0x0F);
     f.setSubtractFlag(false);
+}
+
+void CPU::opcodeAddR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    uint16_t result = r.get() + n;
+    f.setCarryFlag(result > 0xFF);
+    f.setHalfCarryFlag((r.get() & 0x0F) + (n & 0x0F) > 0x0F);
+    f.setSubtractFlag(false);
+    r.set(result);
+    f.setZeroFlag(r.get() == 0);
 }
 
 void CPU::opcodeSubR8R8(Register &r1, Register &r2) {
@@ -246,6 +258,8 @@ void CPU::opcodeDecSP() {
     sp.decrement();
 }
 
+// jump instructions
+
 void CPU::opcodeJpN16() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
@@ -257,6 +271,32 @@ void CPU::opcodeJpN16() {
 void CPU::opcodeJpHL() {
     pc.set(hl.get());
 }
+
+void CPU::opcodeJpCCN16(const bool condition) {
+    if (condition) {
+        opcodeJpN16();
+    } else {
+        pc.increment();
+        pc.increment();
+    }
+}
+
+// only two bytes are read
+void CPU::opcodeJrN16() {
+    int8_t e8 = emulator.memory->read(pc.get());
+    pc.increment();
+    int16_t result = pc.get() + e8;
+    pc.set(result);
+}
+
+void CPU::opcodeJrCCN16(const bool condition) {
+    if (condition) {
+        opcodeJrN16();
+    } else {
+        pc.increment();
+    }
+}
+
 
 void CPU::opcodeAndR8R8(Register &r1, Register &r2) {
     r1.set(r1.get() & r2.get());
@@ -316,6 +356,55 @@ void CPU::opcodeRRCA() {
     f.setZeroFlag(false);
     f.setSubtractFlag(false);
     f.setHalfCarryFlag(false);
+}
+
+// stack instructions
+void CPU::opcodePop(RegisterPair &rp) {
+    uint8_t low = emulator.memory->read(sp.get());
+    sp.increment();
+    uint8_t high = emulator.memory->read(sp.get());
+    sp.increment();
+    rp.set((high << 8) | low);
+}
+
+void CPU::opcodePush(RegisterPair &rp) {
+    sp.decrement();
+    emulator.memory->write(sp.get(), rp.get() >> 8);
+    sp.decrement();
+    emulator.memory->write(sp.get(), rp.get() & 0x00FF);
+}
+
+void CPU::opcodePop(WordRegister &r) {
+    uint8_t low = emulator.memory->read(sp.get());
+    sp.increment();
+    uint8_t high = emulator.memory->read(sp.get());
+    sp.increment();
+    r.set((high << 8) | low);
+}
+
+void CPU::opcodePush(WordRegister &r) {
+    sp.decrement();
+    emulator.memory->write(sp.get(), r.get() >> 8);
+    sp.decrement();
+    emulator.memory->write(sp.get(), r.get() & 0x00FF);
+}
+
+void CPU::opcodeCallN16() {
+    uint16_t address = emulator.memory->read(pc.get());
+    pc.increment();
+    address |= emulator.memory->read(pc.get()) << 8;
+    pc.increment();
+    opcodePush(pc);
+    pc.set(address);
+}
+
+void CPU::opcodeCallCCN16(const bool condition) {
+    if (condition) {
+        opcodeCallN16();
+    } else {
+        pc.increment();
+        pc.increment();
+    }
 }
 
 

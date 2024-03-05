@@ -26,6 +26,11 @@ class CPU {
 
         Emulator &emulator;
 
+        void stackPush(uint16_t value);
+        uint16_t stackPop16();
+        void stackPush(uint8_t value);
+        uint8_t stackPop();
+
         void fetchOpcode();
         void opcodeLoadR8R8(Register &r1, Register &r2);
         void opcodeLoadR8N8(Register &r);
@@ -70,15 +75,30 @@ class CPU {
         void opcodeAddR8R8(Register &r1, Register &r2);
         void opcodeAdcR8R8(Register &r1, Register &r2);
         void opcodeAddR16N8(RegisterPair &rp);
+        void opcodeAddR8N8(Register &r);
+
         void opcodeSubR8R8(Register &r1, Register &r2);
         void opcodeAndR8R8(Register &r1, Register &r2);
         void opcodeOrR8R8(Register &r1, Register &r2);
         void opcodeXorR8R8(Register &r1, Register &r2);
         void opcodeXorHL();
+
         void opcodeJpN16();
+        void opcodeJpCCN16(const bool condition);
         void opcodeJpHL();
 
+        void opcodeJrN16();
+        void opcodeJrCCN16(const bool condition);
+
         void opcodeDI();
+
+        void opcodePush(RegisterPair &rp);
+        void opcodePop(RegisterPair &rp);
+        void opcodePush(WordRegister &r);
+        void opcodePop(WordRegister &r);
+
+        void opcodeCallN16();
+        void opcodeCallCCN16(const bool condition);
         
         void unimplementedOpcode();
 };
