@@ -71,17 +71,42 @@ class CPU {
         void opcodeRLCA();
         void opcodeRRCA();
 
+
+        void opcodeAdcR8R8(Register &r1, Register &r2);
+        void opcodeAdcR8N8(Register &r);
+        void opcodeAdcHL();
+
         void opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2);
         void opcodeAddR8R8(Register &r1, Register &r2);
-        void opcodeAdcR8R8(Register &r1, Register &r2);
         void opcodeAddR16N8(RegisterPair &rp);
         void opcodeAddR8N8(Register &r);
+        void opcodeAddSPE8();
+        void opcodeAddAHL();
 
         void opcodeSubR8R8(Register &r1, Register &r2);
+        void opcodeSubR8N8(Register &r);
+        void opcodeSubHL();
+
+        void opcodeSbcR8R8(Register &r1, Register &r2);
+        void opcodeSbcR8N8(Register &r);
+        void opcodeSbcHL();
+
         void opcodeAndR8R8(Register &r1, Register &r2);
+        void opcodeAndR8N8(Register &r);
+        void opcodeAndHL();
+
+
         void opcodeOrR8R8(Register &r1, Register &r2);
+        void opcodeOrR8N8(Register &r);
+        void opcodeOrHL();
+
         void opcodeXorR8R8(Register &r1, Register &r2);
+        void opcodeXorR8N8(Register &r);
         void opcodeXorHL();
+
+        void opcodeCpR8R8(Register &r1, Register &r2);
+        void opcodeCpR8N8(Register &r);
+        void opcodeCpHL();
 
         void opcodeJpN16();
         void opcodeJpCCN16(const bool condition);
@@ -91,6 +116,7 @@ class CPU {
         void opcodeJrCCN16(const bool condition);
 
         void opcodeDI();
+        void opcodeEI();
 
         void opcodePush(RegisterPair &rp);
         void opcodePop(RegisterPair &rp);
@@ -99,6 +125,16 @@ class CPU {
 
         void opcodeCallN16();
         void opcodeCallCCN16(const bool condition);
+
+        void opcodeRet();
+        void opcodeRetCC(const bool condition);
+        void opcodeReti();
+
+        void opcodeRstN8(const uint8_t n);
+
+        void opcodeResU3R8(Register &r);
+        void opcodeResU3HL();
+
         
         void unimplementedOpcode();
 };

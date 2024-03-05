@@ -19,14 +19,6 @@ void CPU::opcodeAddR8R8(Register &r1, Register &r2) {
     f.setZeroFlag(r1.get() == 0);
 }
 
-void CPU::opcodeAdcR8R8(Register &r1, Register &r2) {
-    uint16_t result = r1.get() + r2.get() + f.getCarryFlag();
-    f.setCarryFlag(result > 0xFF);
-    f.setHalfCarryFlag((r1.get() & 0x0F) + (r2.get() & 0x0F) + f.getCarryFlag() > 0x0F);
-    f.setSubtractFlag(false);
-    r1.set(result);
-    f.setZeroFlag(r1.get() == 0);
-}
 
 void CPU::opcodeAddR16N8(RegisterPair &rp) {
     uint16_t n = emulator.memory->read(pc.get());
@@ -49,6 +41,63 @@ void CPU::opcodeAddR8N8(Register &r) {
     f.setZeroFlag(r.get() == 0);
 }
 
+void CPU::opcodeAddSPE8() {
+    int8_t e8 = emulator.memory->read(pc.get());
+    pc.increment();
+    int16_t result = sp.get() + e8;
+    f.setZeroFlag(false);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag((sp.get() & 0x0F) + (e8 & 0x0F) > 0x0F);
+    f.setCarryFlag((sp.get() & 0xFF) + e8 > 0xFF);
+    sp.set(result);
+}
+
+void CPU::opcodeAddAHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    uint16_t result = a.get() + value;
+    f.setCarryFlag(result > 0xFF);
+    f.setHalfCarryFlag((a.get() & 0x0F) + (value & 0x0F) > 0x0F);
+    f.setSubtractFlag(false);
+    a.set(result);
+    f.setZeroFlag(a.get() == 0);
+}
+
+// ADC instructions
+
+void CPU::opcodeAdcR8R8(Register &r1, Register &r2) {
+    uint16_t result = r1.get() + r2.get() + f.getCarryFlag();
+    f.setCarryFlag(result > 0xFF);
+    f.setHalfCarryFlag((r1.get() & 0x0F) + (r2.get() & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setSubtractFlag(false);
+    r1.set(result);
+    f.setZeroFlag(r1.get() == 0);
+}
+
+void CPU::opcodeAdcR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    uint16_t result = r.get() + n + f.getCarryFlag();
+    f.setCarryFlag(result > 0xFF);
+    f.setHalfCarryFlag((r.get() & 0x0F) + (n & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setSubtractFlag(false);
+    r.set(result);
+    f.setZeroFlag(r.get() == 0);
+}
+
+void CPU::opcodeAdcHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    uint16_t result = a.get() + value + f.getCarryFlag();
+    f.setCarryFlag(result > 0xFF);
+    f.setHalfCarryFlag((a.get() & 0x0F) + (value & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setSubtractFlag(false);
+    a.set(result);
+    f.setZeroFlag(a.get() == 0);
+}
+
+// SUB instructions
+
 void CPU::opcodeSubR8R8(Register &r1, Register &r2) {
     uint16_t result = r1.get() - r2.get();
     f.setCarryFlag(r1.get() < r2.get());
@@ -56,6 +105,61 @@ void CPU::opcodeSubR8R8(Register &r1, Register &r2) {
     f.setSubtractFlag(true);
     r1.set(result);
     f.setZeroFlag(r1.get() == 0);
+}
+
+void CPU::opcodeSubR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    uint16_t result = r.get() - n;
+    f.setCarryFlag(r.get() < n);
+    f.setHalfCarryFlag((r.get() & 0x0F) < (n & 0x0F));
+    f.setSubtractFlag(true);
+    r.set(result);
+    f.setZeroFlag(r.get() == 0);
+}
+
+void CPU::opcodeSubHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    uint16_t result = a.get() - value;
+    f.setCarryFlag(a.get() < value);
+    f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F));
+    f.setSubtractFlag(true);
+    a.set(result);
+    f.setZeroFlag(a.get() == 0);
+}
+
+// SBC instructions
+
+void CPU::opcodeSbcR8R8(Register &r1, Register &r2) {
+    uint16_t result = r1.get() - r2.get() - f.getCarryFlag();
+    f.setCarryFlag(r1.get() < r2.get() + f.getCarryFlag());
+    f.setHalfCarryFlag((r1.get() & 0x0F) < (r2.get() & 0x0F) + f.getCarryFlag());
+    f.setSubtractFlag(true);
+    r1.set(result);
+    f.setZeroFlag(r1.get() == 0);
+}
+
+void CPU::opcodeSbcR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    uint16_t result = r.get() - n - f.getCarryFlag();
+    f.setCarryFlag(r.get() < n + f.getCarryFlag());
+    f.setHalfCarryFlag((r.get() & 0x0F) < (n & 0x0F) + f.getCarryFlag());
+    f.setSubtractFlag(true);
+    r.set(result);
+    f.setZeroFlag(r.get() == 0);
+}
+
+void CPU::opcodeSbcHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    uint16_t result = a.get() - value - f.getCarryFlag();
+    f.setCarryFlag(a.get() < value + f.getCarryFlag());
+    f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F) + f.getCarryFlag());
+    f.setSubtractFlag(true);
+    a.set(result);
+    f.setZeroFlag(a.get() == 0);
 }
 
 
@@ -297,6 +401,7 @@ void CPU::opcodeJrCCN16(const bool condition) {
     }
 }
 
+// AND instructions
 
 void CPU::opcodeAndR8R8(Register &r1, Register &r2) {
     r1.set(r1.get() & r2.get());
@@ -306,6 +411,28 @@ void CPU::opcodeAndR8R8(Register &r1, Register &r2) {
     f.setCarryFlag(false);
 }
 
+void CPU::opcodeAndR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    r.set(r.get() & n);
+    f.setZeroFlag(r.get() == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(true);
+    f.setCarryFlag(false);
+}
+
+void CPU::opcodeAndHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    a.set(a.get() & value);
+    f.setZeroFlag(a.get() == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(true);
+    f.setCarryFlag(false);
+}
+
+// OR instructions
+
 void CPU::opcodeOrR8R8(Register &r1, Register &r2) {
     r1.set(r1.get() | r2.get());
     f.setZeroFlag(r1.get() == 0);
@@ -314,9 +441,71 @@ void CPU::opcodeOrR8R8(Register &r1, Register &r2) {
     f.setCarryFlag(false);
 }
 
+void CPU::opcodeOrR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    r.set(r.get() | n);
+    f.setZeroFlag(r.get() == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+    f.setCarryFlag(false);
+}
+
+void CPU::opcodeOrHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    a.set(a.get() | value);
+    f.setZeroFlag(a.get() == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+    f.setCarryFlag(false);
+}
+
+// Compare instructions
+
+void CPU::opcodeCpR8R8(Register &r1, Register &r2) {
+    uint8_t result = r1.get() - r2.get();
+    f.setZeroFlag(result == 0);
+    f.setSubtractFlag(true);
+    f.setHalfCarryFlag((r1.get() & 0x0F) < (r2.get() & 0x0F));
+    f.setCarryFlag(r1.get() < r2.get());
+}
+
+void CPU::opcodeCpR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    uint8_t result = r.get() - n;
+    f.setZeroFlag(result == 0);
+    f.setSubtractFlag(true);
+    f.setHalfCarryFlag((r.get() & 0x0F) < (n & 0x0F));
+    f.setCarryFlag(r.get() < n);
+}
+
+void CPU::opcodeCpHL() {
+    uint16_t address = hl.get();
+    uint8_t value = emulator.memory->read(address);
+    uint8_t result = a.get() - value;
+    f.setZeroFlag(result == 0);
+    f.setSubtractFlag(true);
+    f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F));
+    f.setCarryFlag(a.get() < value);
+}
+
+// XOR instructions
+
 void CPU::opcodeXorR8R8(Register &r1, Register &r2) {
     r1.set(r1.get() ^ r2.get());
     f.setZeroFlag(r1.get() == 0);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+    f.setCarryFlag(false);
+}
+
+void CPU::opcodeXorR8N8(Register &r) {
+    uint8_t n = emulator.memory->read(pc.get());
+    pc.increment();
+    r.set(r.get() ^ n);
+    f.setZeroFlag(r.get() == 0);
     f.setSubtractFlag(false);
     f.setHalfCarryFlag(false);
     f.setCarryFlag(false);
@@ -335,6 +524,10 @@ void CPU::opcodeXorHL() {
 
 void CPU::opcodeDI() {
     // disable interrupts TODO
+}
+
+void CPU::opcodeEI() {
+    // enable interrupts TODO
 }
 
 // register rotate instructions
@@ -405,6 +598,26 @@ void CPU::opcodeCallCCN16(const bool condition) {
         pc.increment();
         pc.increment();
     }
+}
+
+void CPU::opcodeRstN8(const uint8_t n) {
+    opcodePush(pc);
+    pc.set(n);
+}
+
+void CPU::opcodeRet() {
+    opcodePop(pc);
+}
+
+void CPU::opcodeRetCC(const bool condition) {
+    if (condition) {
+        opcodeRet();
+    }
+}
+
+void CPU::opcodeReti() {
+    opcodeRet();
+    opcodeEI();
 }
 
 

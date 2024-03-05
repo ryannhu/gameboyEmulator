@@ -11,6 +11,10 @@ int main( int argc, char* args[] )
     // std::unique_ptr<Graphics> graphics = std::make_unique<Graphics>();
     // std::unique_ptr<Cartridge> cartridge = std::make_unique<Cartridge>();
     std::shared_ptr<Cartridge> cartridge = std::make_shared<Cartridge>();
+    if (argc < 2) {
+        std::cout << "Usage: " << args[0] << " <rom file>" << std::endl;
+        return 1;
+    }
     const std::string filename = args[1];
     cartridge->load(filename);
 
