@@ -19,6 +19,8 @@ class CPU {
         // Flags
         FlagRegister f;
 
+        bool ime = false;
+
         uint16_t currentAddress;
         uint16_t nextAddress;
 
@@ -70,6 +72,17 @@ class CPU {
 
         void opcodeRLCA();
         void opcodeRRCA();
+        void opcodeRLA();
+        void opcodeRRA();
+
+        void opcodeStop();
+        
+        void opcodeDAA();
+        void opcodeCPL();
+        void opcodeCCF();
+        void opcodeSCF();
+
+        void opcodeHalt();
 
 
         void opcodeAdcR8R8(Register &r1, Register &r2);
@@ -82,6 +95,7 @@ class CPU {
         void opcodeAddR8N8(Register &r);
         void opcodeAddSPE8();
         void opcodeAddAHL();
+        void opcodeAddHLSP();
 
         void opcodeSubR8R8(Register &r1, Register &r2);
         void opcodeSubR8N8(Register &r);

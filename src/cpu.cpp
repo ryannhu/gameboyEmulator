@@ -131,8 +131,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(d);
             break;
         case 0x17: // RLA
-            // TODO
-            unimplementedOpcode();
+            opcodeRLA();
             break;
         case 0x18: // JR r8
             opcodeJrN16();
@@ -156,8 +155,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(e);
             break;
         case 0x1F: // RRA
-            // TODO
-            unimplementedOpcode();
+            opcodeRRA();
             break;
         case 0x20: // JR NZ, r8
             opcodeJrCCN16(f.getZeroFlag() == 0);
@@ -181,8 +179,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(h);
             break;
         case 0x27: // DAA 
-            // TODO
-            unimplementedOpcode();
+            opcodeDAA();
             break;
         case 0x28: // JR Z, r8
             opcodeJrCCN16(f.getZeroFlag() == 1);
@@ -206,8 +203,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(l);
             break;
         case 0x2F: // CPL
-            // TODO
-            unimplementedOpcode();
+            opcodeCPL();
             break;
         case 0x30: // JR NC, r8
             opcodeJrCCN16(f.getCarryFlag() == 0);
@@ -237,8 +233,7 @@ void CPU::executeInstruction() {
             opcodeJrCCN16(f.getCarryFlag() == 1);
             break;
         case 0x39: // ADD HL, SP
-        // TODO
-            // opcodeAddR16R16(hl, sp);
+            opcodeAddHLSP();
             break;
         case 0x3A: // LD A, (HL-)
             opcodeLoadAHLD();
@@ -256,8 +251,7 @@ void CPU::executeInstruction() {
             opcodeLoadR8N8(a);
             break;
         case 0x3F: // CCF
-            // TODO
-            unimplementedOpcode();
+            opcodeCCF();
             break;
         case 0x40: // LD B, B
             opcodeLoadR8R8(b, b);
@@ -519,8 +513,7 @@ void CPU::executeInstruction() {
             opcodeSubR8R8(a, l);
             break;
         case 0x96: // SUB A, (HL)
-            // TODO
-            unimplementedOpcode();
+            opcodeSubHL();
             break;
         case 0x97: // SUB A, A
             opcodeSubR8R8(a, a);

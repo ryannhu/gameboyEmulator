@@ -34,6 +34,7 @@ uint8_t Memory::read(uint16_t address) {
         return 0;
     } else if (address < 0xFF80) {
         // IO
+        std::cout << "Unimplemented IO read from memory at address: " << std::hex << address << std::endl;
         return 0;
     } else if (address < 0xFFFF) {
         // high ram

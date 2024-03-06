@@ -13,6 +13,9 @@ add_executable(gbEmulator ${SRC_LIST})
 # Set the compile options to include the sanitizer
 set(SANITIZE_FLAGS "-fsanitize=address -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_FLAGS}")
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SANITIZE_FLAGS}")
 # If using Clang, uncomment the following line to link the sanitizer as well
 # set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")

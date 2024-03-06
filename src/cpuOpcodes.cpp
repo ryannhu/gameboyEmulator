@@ -63,6 +63,14 @@ void CPU::opcodeAddAHL() {
     f.setZeroFlag(a.get() == 0);
 }
 
+void CPU::opcodeAddHLSP() {
+    uint16_t result = hl.get() + sp.get();
+    f.setCarryFlag(result > 0xFFFF);
+    f.setHalfCarryFlag((hl.get() & 0x0FFF) + (sp.get() & 0x0FFF) > 0x0FFF);
+    f.setSubtractFlag(false);
+    hl.set(result);
+}
+
 // ADC instructions
 
 void CPU::opcodeAdcR8R8(Register &r1, Register &r2) {
@@ -247,6 +255,7 @@ void CPU::LoadHAN16() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
     address |= 0xFF00;
+    std::cout << "address: " << std::hex << (int) address << std::endl;
     a.set(emulator.memory->read(address));
 }
 
@@ -523,11 +532,11 @@ void CPU::opcodeXorHL() {
 
 
 void CPU::opcodeDI() {
-    // disable interrupts TODO
+    ime = false;
 }
 
 void CPU::opcodeEI() {
-    // enable interrupts TODO
+    ime = true;
 }
 
 // register rotate instructions
@@ -550,6 +559,71 @@ void CPU::opcodeRRCA() {
     f.setSubtractFlag(false);
     f.setHalfCarryFlag(false);
 }
+
+void CPU::opcodeRLA() {
+    uint8_t value = a.get();
+    uint8_t carry = f.getCarryFlag();
+    f.setCarryFlag(value & 0x80);
+    value = (value << 1) | carry;
+    a.set(value);
+    f.setZeroFlag(false);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+}
+
+void CPU::opcodeRRA() {
+    uint8_t value = a.get();
+    uint8_t carry = f.getCarryFlag();
+    f.setCarryFlag(value & 0x01);
+    value = (value >> 1) | (carry << 7);
+    a.set(value);
+    f.setZeroFlag(false);
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+}
+
+void CPU::opcodeDAA() {
+    uint8_t value = a.get();
+    if (!f.getSubtractFlag()) {
+        if (f.getHalfCarryFlag() || (value & 0x0F) > 9) {
+            value += 0x06;
+        }
+        if (f.getCarryFlag() || value > 0x9F) {
+            value += 0x60;
+            f.setCarryFlag(true);
+        }
+    } else {
+        if (f.getHalfCarryFlag()) {
+            value = (value - 6) & 0xFF;
+        }
+        if (f.getCarryFlag()) {
+            value -= 0x60;
+        }
+    }
+    f.setZeroFlag(value == 0);
+    f.setHalfCarryFlag(false);
+    a.set(value);
+}
+
+void CPU::opcodeCPL() {
+    a.set(~a.get());
+    f.setSubtractFlag(true);
+    f.setHalfCarryFlag(true);
+}
+
+void CPU::opcodeCCF() {
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+    f.setCarryFlag(!f.getCarryFlag());
+}
+
+void CPU::opcodeSCF() {
+    f.setSubtractFlag(false);
+    f.setHalfCarryFlag(false);
+    f.setCarryFlag(true);
+}
+
+
 
 // stack instructions
 void CPU::opcodePop(RegisterPair &rp) {
