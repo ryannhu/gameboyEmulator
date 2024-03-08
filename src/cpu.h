@@ -9,9 +9,11 @@ class CPU {
     public:
         CPU(Emulator &emulator);
         ~CPU() = default;
+
         void executeInstruction();
 
-    
+        Register interruptEnable;
+
     private:
         Register a, b, c, d, e, h, l;
         RegisterPair af, bc, de, hl;
@@ -84,6 +86,32 @@ class CPU {
 
         void opcodeHalt();
 
+        void opcodeCB();
+
+        // CB Opcodes
+        void opcodeRlcR8(Register &r);
+        void opcodeRlcHL();
+        void opcodeRrcR8(Register &r);
+        void opcodeRrcHL();
+        void opcodeRlR8(Register &r);
+        void opcodeRlHL();
+        void opcodeRrR8(Register &r);
+        void opcodeRrHL();
+        void opcodeSlaR8(Register &r);
+        void opcodeSlaHL();
+        void opcodeSraR8(Register &r);
+        void opcodeSraHL();
+        void opcodeSrlR8(Register &r);
+        void opcodeSrlHL();
+        void opcodeSwapR8(Register &r);
+        void opcodeSwapHL();
+        void opcodeBitU3R8(const uint8_t n, Register &r);
+        void opcodeBitU3HL(const uint8_t n);
+        void opcodeSetU3R8(const uint8_t n, Register &r);
+        void opcodeSetU3HL(const uint8_t n);
+        void opcodeResU3R8(const uint8_t n, Register &r);
+        void opcodeResU3HL(const uint8_t n);
+        
 
         void opcodeAdcR8R8(Register &r1, Register &r2);
         void opcodeAdcR8N8(Register &r);
@@ -146,8 +174,6 @@ class CPU {
 
         void opcodeRstN8(const uint8_t n);
 
-        void opcodeResU3R8(Register &r);
-        void opcodeResU3HL();
 
         
         void unimplementedOpcode();

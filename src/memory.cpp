@@ -1,6 +1,7 @@
 #include "memory.h"
 
 #include "emulator.h"
+#include "cpu.h"
 
 Memory::Memory(Emulator &emulator) :
     emulator(emulator)
@@ -41,6 +42,7 @@ uint8_t Memory::read(uint16_t address) {
         return highRam.at(address - 0xFF80);
     } else if (address == 0xFFFF) {
         // CPU Enable register
+        return emulator.cpu->interruptEnable.get();
 
     }
     

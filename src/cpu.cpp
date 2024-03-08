@@ -673,7 +673,6 @@ void CPU::executeInstruction() {
             break;
         case 0xCB: // PREFIX CB
             // TODO
-            unimplementedOpcode();
             break;
         case 0xCC: // CALL Z, a16
             opcodeCallCCN16(f.getZeroFlag() == 1);
