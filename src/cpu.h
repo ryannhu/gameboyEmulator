@@ -11,6 +11,7 @@ class CPU {
         ~CPU() = default;
 
         void executeInstruction();
+        void step();
 
         Register interruptEnable;
 
@@ -20,6 +21,8 @@ class CPU {
         WordRegister sp, pc;
         // Flags
         FlagRegister f;
+
+        int cycles = 0;
 
         bool ime = false;
 
@@ -85,6 +88,8 @@ class CPU {
         void opcodeSCF();
 
         void opcodeHalt();
+        void opcodeStop();
+
 
         void opcodeCB();
 

@@ -57,13 +57,16 @@ uint8_t Memory::read(uint16_t address) {
 void Memory::write(uint16_t address, uint8_t value) {
     if (address < 0x8000) {
         emulator.cartridge->write(address, value);
+        return;
     } else if (address < 0xA000) {
         //Char map data, vram
     } else if (address < 0xC000) {
         // Cartridge RAM
         emulator.cartridge->write(address, value);
+        return;
     } else if (address < 0xE000) {
         workRam.at(address - 0xC000) = value;
+        return;
     } else if (address < 0xFE00) {
         // echo ram
         std::cout << "Unimplemented write to memory at address: " << std::hex << address << std::endl;
@@ -76,13 +79,14 @@ void Memory::write(uint16_t address, uint8_t value) {
 
     } else if (address < 0xFF80) {
         // IO
-
     } else if (address < 0xFFFF) {
         // high ram
         highRam.at(address - 0xFF80) = value;
+        return;
     } else if (address == 0xFFFF) {
         // CPU Enable register
-
+        emulator.cpu->interruptEnable.set(value);
+        return;
     }
 
 

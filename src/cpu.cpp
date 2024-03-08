@@ -11,41 +11,27 @@ CPU::CPU(Emulator &emulator) :
         pc.set(0x100);
     }
 
-// void CPU::stackPush(uint8_t value) {
-//     sp.decrement();
-//     emulator.memory->write(sp.get(), value);
-// }
-
-// uint8_t CPU::stackPop() {
-//     uint8_t value = emulator.memory->read(sp.get());
-//     sp.increment();
-//     return value;
-// }
-
-// void CPU::stackPush(uint16_t value) {
-//     sp.decrement();
-//     emulator.memory->write(sp.get(), value >> 8);
-//     sp.decrement();
-//     emulator.memory->write(sp.get(), value & 0xFF);
-// }
-
-// uint16_t CPU::stackPop16() {
-//     uint16_t value = emulator.memory->read(sp.get());
-//     sp.increment();
-//     value |= emulator.memory->read(sp.get()) << 8;
-//     sp.increment();
-//     return value;
-// }
+void CPU::step() {
+    
+    executeInstruction();
+}
 
 
 void CPU::executeInstruction() {
     // std::cout << emulator.memory->read(pc.get()) << std::endl;
     std::cout << "Program Counter: " << pc.get() << std::endl;
-
+    ++cycles;
     auto opcode = emulator.memory->read(pc.get());
     if (true) {
+        std::cout << "Cycle: " << cycles << " ";
         std::cout << "Executing Opcode: " << std::hex << (int)opcode << std::endl;
         // print registers
+        std::cout << "Flags: ";
+        std::cout << "Z: " << f.getZeroFlag();
+        std::cout << " N: " << f.getSubtractFlag();
+        std::cout << " H: " << f.getHalfCarryFlag();
+        std::cout << " C: " << f.getCarryFlag() << std::endl;
+
         std::cout << "Registers: " << std::endl;
         std::cout << " A: " << std::hex << (int)a.get() ;
         std::cout << " B: " << std::hex << (int)b.get() ;
@@ -672,7 +658,7 @@ void CPU::executeInstruction() {
             opcodeJpCCN16(f.getZeroFlag() == 1);
             break;
         case 0xCB: // PREFIX CB
-            // TODO
+            opcodeCB();
             break;
         case 0xCC: // CALL Z, a16
             opcodeCallCCN16(f.getZeroFlag() == 1);
@@ -680,7 +666,12 @@ void CPU::executeInstruction() {
         case 0xCD: // CALL a16
             opcodeCallN16();
             break;
-        
+        case 0xCE: // ADC A, 8
+            opcodeAdcR8N8(a);
+            break;
+        case 0xCF: // RST 08H
+            opcodeRstN8(0x08);
+            break;
         case 0xD0: // RET NC
             opcodeRetCC(f.getCarryFlag() == 0);
             break;
@@ -732,7 +723,9 @@ void CPU::executeInstruction() {
         case 0xE5: // PUSH HL
             opcodePush(hl);
             break;
-        
+        case 0xE6: // AND 8
+            opcodeAndR8N8(a);
+            break;
         case 0xE7: // RST 20H
             opcodeRstN8(0x20);
             break;
@@ -786,6 +779,7 @@ void CPU::executeInstruction() {
             break;
         case 0xFB: // EI
             opcodeEI();
+            exit(1);
             break;
         case 0xFE: // CP 8
             opcodeCpR8N8(a);

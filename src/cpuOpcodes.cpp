@@ -875,6 +875,7 @@ void CPU::opcodeBitU3R8(const uint8_t n, Register &r) {
 void CPU::opcodeBitU3HL(const uint8_t n) {
     uint16_t address = hl.get();
     uint8_t value = emulator.memory->read(address);
+    std::cout << "VALUE: " << std::hex << (int) value << std::endl; 
     f.setZeroFlag(!(value & (1 << n)));
     f.setSubtractFlag(false);
     f.setHalfCarryFlag(true);
@@ -907,6 +908,22 @@ void CPU::opcodeResU3HL(const uint8_t n) {
 void CPU::opcodeCB() {
     uint8_t opcode = emulator.memory->read(pc.get());
     pc.increment();
+        if (true) {
+        std::cout << "Executing Opcode: " << std::hex << (int)opcode << std::endl;
+        // print registers
+        std::cout << "Registers: " << std::endl;
+        std::cout << " A: " << std::hex << (int)a.get() ;
+        std::cout << " B: " << std::hex << (int)b.get() ;
+        std::cout << " C: " << std::hex << (int)c.get() ;
+        std::cout << " D: " << std::hex << (int)d.get() ;
+        std::cout << " E: " << std::hex << (int)e.get() ;
+        std::cout << " H: " << std::hex << (int)h.get() ;
+        std::cout << " L: " << std::hex << (int)l.get() ;
+        std::cout << " BC: " << std::hex << (int)bc.get();
+        std::cout << " DE: " << std::hex << (int)de.get();
+        std::cout << " HL: " << std::hex << (int)hl.get();
+        std::cout << " SP: " << std::hex << (int)sp.get() << std::endl; 
+    }
     switch (opcode) {
         case 0x00: // RLC B
             opcodeRlcR8(b);

@@ -14,9 +14,8 @@ Emulator::~Emulator() {
 void Emulator::run() {
     std::cout << "Running emulator" << std::endl;
     while (graphics->isRunning()) {
-        cpu->executeInstruction();
-        graphics->drawGameboyScreen();
-
+        cpu->step();
+        // graphics->drawGameboyScreen();
         ticks++;
     }
 }
