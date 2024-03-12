@@ -7,7 +7,7 @@ class Register {
     public:
         Register();
         ~Register() = default;
-        void set(uint8_t value);
+        void virtual set(uint8_t value);
         uint8_t get();
         void increment();
         void decrement();
@@ -19,6 +19,7 @@ class FlagRegister : public Register {
     public:
         FlagRegister() = default;
         ~FlagRegister() = default;
+        void set(uint8_t value) override;
         bool getZeroFlag();
         bool getSubtractFlag();
         bool getHalfCarryFlag();
