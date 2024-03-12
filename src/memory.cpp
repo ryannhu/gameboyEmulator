@@ -35,8 +35,7 @@ uint8_t Memory::read(uint16_t address) {
         return 0;
     } else if (address < 0xFF80) {
         // IO
-        std::cout << "Unimplemented IO read from memory at address: " << std::hex << address << std::endl;
-        return 0;
+        return IO::read(address);
     } else if (address < 0xFFFF) {
         // high ram
         return highRam.at(address - 0xFF80);
@@ -79,6 +78,8 @@ void Memory::write(uint16_t address, uint8_t value) {
 
     } else if (address < 0xFF80) {
         // IO
+        IO::write(address, value);
+        return;
     } else if (address < 0xFFFF) {
         // high ram
         highRam.at(address - 0xFF80) = value;

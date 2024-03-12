@@ -14,14 +14,19 @@ CPU::CPU(Emulator &emulator) :
     bc(b, c),
     de(d, e),
     hl(h, l),
-    emulator(emulator) {
+    emulator(emulator),
+    debug(emulator.memory.get()) {
         // set pc to 0x100 for now
         pc.set(0x100);
+
     }
 
 void CPU::step() {
     // check for interrupts
     handleInterrupts();
+
+    debug.update();
+    debug.print();
     executeInstruction();
 }
 

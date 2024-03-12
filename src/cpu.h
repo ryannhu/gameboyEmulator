@@ -4,6 +4,7 @@
 #include "register.h"
 #include "memory.h"
 #include "emulator.h"
+#include "debug.h"
 
 class CPU {
     public:
@@ -26,6 +27,8 @@ class CPU {
         int cycles = 0;
 
         bool ime = false;
+
+        Debug debug;
 
         uint16_t currentAddress;
         uint16_t nextAddress;
