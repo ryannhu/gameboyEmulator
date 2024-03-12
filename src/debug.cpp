@@ -9,7 +9,6 @@ void Debug::update() {
         logString += memory->read(0xFF01);
 
         memory->write(0xFF02, 0x0);
-    exit(1);
 
     }
 }
@@ -18,5 +17,5 @@ void Debug::print() {
     if (logString == "") {
         return;
     }
-    std::cout << logString << std::endl;
+    std::cout << "DEBUG:  " << logString << std::endl;
 }

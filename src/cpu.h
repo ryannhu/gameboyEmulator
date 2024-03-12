@@ -1,10 +1,14 @@
 #ifndef CPU_H
 #define CPU_H
 
+
+#include <string>
+
 #include "register.h"
 #include "memory.h"
 #include "emulator.h"
 #include "debug.h"
+
 
 class CPU {
     public:
@@ -16,7 +20,7 @@ class CPU {
 
         Register interruptEnable;
         Register interruptFlags;
-
+        std::string debugString;
     private:
         Register a, b, c, d, e, h, l;
         RegisterPair af, bc, de, hl;

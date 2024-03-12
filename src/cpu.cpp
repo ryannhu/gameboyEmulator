@@ -27,6 +27,16 @@ void CPU::step() {
 
     debug.update();
     debug.print();
+    if (emulator.memory->read(0xFF02) == 0x81) {
+        debugString += emulator.memory->read(0xFF01);
+
+        emulator.memory->write(0xFF02, 0x0);
+
+    }
+    if (debugString == "") {
+    } else {
+        std::cout << "DEBUG: " << debugString << std::endl;
+    }
     executeInstruction();
 }
 
@@ -156,7 +166,6 @@ void CPU::executeInstruction() {
             break;
         case 0x10: // STOP 0
             // TODO
-            unimplementedOpcode();
             break;
         case 0x11: // LD DE, 16
             opcodeLoadR16N16(de);
