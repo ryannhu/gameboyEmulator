@@ -1,6 +1,14 @@
 #include "cpu.h"
 
 
+typedef enum Interupts {
+    VBLANK = 0x01,
+    LCDSTAT = 0x02,
+    TIMER = 0x04,
+    SERIAL = 0x08,
+    JOYPAD = 0x10
+} Interupts;
+
 CPU::CPU(Emulator &emulator) :
     af(a, f),
     bc(b, c),
@@ -12,8 +20,55 @@ CPU::CPU(Emulator &emulator) :
     }
 
 void CPU::step() {
-    
+    // check for interrupts
+    handleInterrupts();
     executeInstruction();
+}
+
+void CPU::handleInterrupts() {
+    if (ime) {
+        uint8_t interruptFlags = emulator.memory->read(0xFF0F);
+        uint8_t interruptEnable = emulator.memory->read(0xFFFF);
+        uint8_t interrupt = interruptFlags & interruptEnable;
+
+        if (interrupt == 0) {
+            return;
+        }
+
+        std::cout << "Interrupt: " << std::hex << (int)interrupt << std::endl;
+
+        // push pc to stack
+        opcodePush(pc);
+
+        if (interrupt & VBLANK) {
+            std::cout << "VBLANK" << std::endl;
+            handleInterrupts(0x40);
+        } else if (interrupt & LCDSTAT) {
+            std::cout << "LCDSTAT" << std::endl;
+            handleInterrupts(0x48);
+        } else if (interrupt & TIMER) {
+            std::cout << "TIMER" << std::endl;
+            handleInterrupts(0x50);
+        } else if (interrupt & SERIAL) {
+            std::cout << "SERIAL" << std::endl;
+            handleInterrupts(0x58);
+        } else if (interrupt & JOYPAD) {
+            std::cout << "JOYPAD" << std::endl;
+            handleInterrupts(0x60);
+        }
+
+        // disable interrupts
+
+        ime = false;
+
+    }
+}
+
+// handle interrupt with address
+void CPU::handleInterrupts(uint16_t address) {
+    // TODO
+    pc.set(address);
+
 }
 
 
@@ -779,7 +834,6 @@ void CPU::executeInstruction() {
             break;
         case 0xFB: // EI
             opcodeEI();
-            exit(1);
             break;
         case 0xFE: // CP 8
             opcodeCpR8N8(a);

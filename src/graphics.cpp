@@ -1,7 +1,7 @@
 #include "graphics.h"
 
 
-Graphics::Graphics() {
+Graphics::Graphics(Emulator& emulator) : emulator(emulator) {
     SDL_Init(SDL_INIT_VIDEO);
 
     window = SDL_CreateWindow(
@@ -88,5 +88,8 @@ void Graphics::quit() {
     running = false;
 }
 
+void Graphics::Delay(uint32_t time) {
+    SDL_Delay(time);
+}
 
 

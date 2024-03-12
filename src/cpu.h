@@ -14,6 +14,7 @@ class CPU {
         void step();
 
         Register interruptEnable;
+        Register interruptFlags;
 
     private:
         Register a, b, c, d, e, h, l;
@@ -33,12 +34,12 @@ class CPU {
 
         Emulator &emulator;
 
-        void stackPush(uint16_t value);
-        uint16_t stackPop16();
-        void stackPush(uint8_t value);
-        uint8_t stackPop();
 
         void fetchOpcode();
+
+        void handleInterrupts();
+        void handleInterrupts(uint16_t address);
+
         void opcodeLoadR8R8(Register &r1, Register &r2);
         void opcodeLoadR8N8(Register &r);
         void opcodeLoadR16R8(RegisterPair &rp, Register &r);
@@ -80,7 +81,6 @@ class CPU {
         void opcodeRLA();
         void opcodeRRA();
 
-        void opcodeStop();
         
         void opcodeDAA();
         void opcodeCPL();

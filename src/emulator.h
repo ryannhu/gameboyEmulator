@@ -3,12 +3,13 @@
 
 #include <iostream>
 #include <memory>
-#include "graphics.h"
 #include "cartridge.h"
 
 class CPU;
 
 class Memory;
+
+class Graphics;
 
 class Emulator {
     public:

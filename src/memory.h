@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include "emulator.h"
+#include "io.h"
 
 class Memory {
 public:
