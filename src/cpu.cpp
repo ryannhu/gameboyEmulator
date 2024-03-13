@@ -1,5 +1,6 @@
 #include "cpu.h"
 
+#include <iomanip>
 
 typedef enum Interupts {
     VBLANK = 0x01,
@@ -18,15 +19,40 @@ CPU::CPU(Emulator &emulator) :
     debug(emulator.memory.get()) {
         // set pc to 0x100 for now
         pc.set(0x100);
+        a.set(0x01);
+        f.set(0xB0);
+        b.set(0x00);
+        c.set(0x13);
+        d.set(0x00);
+        e.set(0xD8);
+        h.set(0x01);
+        l.set(0x4D);
+        sp.set(0xFFFE);
 
     }
 
 void CPU::step() {
+    // print registers
+    std::cout << "A:" << std::setw(2) << std::setfill('0') << std::hex << (int)a.get() << " ";
+    std::cout << "F:" << std::setw(2) << std::setfill('0') << std::hex << (int)f.get() << " ";
+    std::cout << "B:" << std::setw(2) << std::setfill('0') << std::hex << (int)b.get() << " ";
+    std::cout << "C:" << std::setw(2) << std::setfill('0') << std::hex << (int)c.get() << " ";
+    std::cout << "D:" << std::setw(2) << std::setfill('0') << std::hex << (int)d.get() << " ";
+    std::cout << "E:" << std::setw(2) << std::setfill('0') << std::hex << (int)e.get() << " ";
+    std::cout << "H:" << std::setw(2) << std::setfill('0') << std::hex << (int)h.get() << " ";
+    std::cout << "L:" << std::setw(2) << std::setfill('0') << std::hex << (int)l.get() << " ";
+    std::cout << "SP:" << std::setw(4) << std::setfill('0') << std::hex << (int)sp.get() << " ";
+    std::cout << "PC:" << std::setw(4) << std::setfill('0') << std::hex << (int)pc.get() << " ";
+    std::cout << "PCMEM:" << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get()) << ",";
+    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 1) << ",";
+    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 2) << ",";
+    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 3) << std::endl;
+
     // check for interrupts
     handleInterrupts();
 
     debug.update();
-    debug.print();
+    // debug.print();
     if (emulator.memory->read(0xFF02) == 0x81) {
         debugString += emulator.memory->read(0xFF01);
 
@@ -35,9 +61,11 @@ void CPU::step() {
     }
     if (debugString == "") {
     } else {
-        std::cout << "DEBUG: " << debugString << std::endl;
+        // std::cout << "DEBUG: " << debugString << std::endl;
     }
     executeInstruction();
+
+    
 }
 
 void CPU::handleInterrupts() {
@@ -89,10 +117,10 @@ void CPU::handleInterrupts(uint16_t address) {
 
 void CPU::executeInstruction() {
     // std::cout << emulator.memory->read(pc.get()) << std::endl;
-    std::cout << "Program Counter: " << pc.get() << std::endl;
     ++cycles;
     auto opcode = emulator.memory->read(pc.get());
-    if (true) {
+    if (false) {
+    std::cout << "Program Counter: " << pc.get() << std::endl;
         std::cout << "Cycle: " << cycles << " ";
         std::cout << "Executing Opcode: " << std::hex << (int)opcode << std::endl;
         // print registers
@@ -240,7 +268,7 @@ void CPU::executeInstruction() {
             opcodeJrCCN16(f.getZeroFlag() == 1);
             break;
         case 0x29: // ADD HL, HL
-            opcodeAddR16R16(hl, hl);
+            opcodeAddHLN16(hl.get());
             break;
         case 0x2A: // LD A, (HL+)
             opcodeLoadAHLI();
@@ -472,7 +500,6 @@ void CPU::executeInstruction() {
             break;
         case 0x76: // HALT
             // TODO
-            unimplementedOpcode();
             break;
         case 0x77: // LD (HL), A
             opcodeLoadHLR8(a);

@@ -133,6 +133,7 @@ class CPU {
         void opcodeAddR8R8(Register &r1, Register &r2);
         void opcodeAddR16N8(RegisterPair &rp);
         void opcodeAddR8N8(Register &r);
+        void opcodeAddHLN16(const uint16_t n);
         void opcodeAddSPE8();
         void opcodeAddAHL();
         void opcodeAddHLSP();

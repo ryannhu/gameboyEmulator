@@ -19,6 +19,14 @@ void CPU::opcodeAddR8R8(Register &r1, Register &r2) {
     f.setZeroFlag(r1.get() == 0);
 }
 
+void CPU::opcodeAddHLN16(const uint16_t n) {
+    uint32_t result = hl.get() + n;
+    f.setCarryFlag(result > 0xFFFF);
+    f.setHalfCarryFlag((hl.get() & 0x0FFF) + (n & 0x0FFF) > 0x0FFF);
+    f.setSubtractFlag(false);
+    hl.set(static_cast<uint16_t>(result));
+}
+
 
 void CPU::opcodeAddR16N8(RegisterPair &rp) {
     uint16_t n = emulator.memory->read(pc.get());
@@ -221,7 +229,6 @@ void CPU::opcodeLoadN16A() {
     pc.increment();
     address |= emulator.memory->read(pc.get()) << 8;
     pc.increment();
-    std::cout << "address: " << (int) address << std::endl;
     emulator.memory->write(address, a.get());
 }
 
@@ -255,7 +262,6 @@ void CPU::LoadHAN16() {
     uint16_t address = emulator.memory->read(pc.get());
     pc.increment();
     address |= 0xFF00;
-    std::cout << "address: " << std::hex << (int) address << std::endl;
     a.set(emulator.memory->read(address));
 }
 
@@ -271,8 +277,8 @@ void CPU::LoadHLIA() {
 }
 
 void CPU::opcodeLoadHLDA() {
-    std::cout << (int) a.get() << (int) hl.get() << std::endl;
-    opcodeLoadR8HL(a);
+    // load value of register a into memory at address hl
+    opcodeLoadHLR8(a);
     hl.decrement();
 }
 
@@ -325,7 +331,7 @@ void CPU::opcodeIncR8(Register &r) {
     // set flags
     f.setZeroFlag(r.get() == 0);
     f.setSubtractFlag(false);
-    f.setHalfCarryFlag(false);
+    f.setHalfCarryFlag((r.get() & 0x0F) == 0);
 }
 
 void CPU::opcodeDecR8(Register &r) {
@@ -333,7 +339,7 @@ void CPU::opcodeDecR8(Register &r) {
     // set flags
     f.setZeroFlag(r.get() == 0);
     f.setSubtractFlag(true);
-    f.setHalfCarryFlag(true);
+    f.setHalfCarryFlag((r.get() & 0x0F) == 0x0F);
 }
 
 void CPU::opcodeIncR16(RegisterPair &rp) {
@@ -908,7 +914,7 @@ void CPU::opcodeResU3HL(const uint8_t n) {
 void CPU::opcodeCB() {
     uint8_t opcode = emulator.memory->read(pc.get());
     pc.increment();
-        if (true) {
+        if (false) {
         std::cout << "Executing Opcode: " << std::hex << (int)opcode << std::endl;
         // print registers
         std::cout << "Registers: " << std::endl;

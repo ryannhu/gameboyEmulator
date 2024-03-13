@@ -59,6 +59,7 @@ void Memory::write(uint16_t address, uint8_t value) {
         return;
     } else if (address < 0xA000) {
         //Char map data, vram
+        return;
     } else if (address < 0xC000) {
         // Cartridge RAM
         emulator.cartridge->write(address, value);

@@ -17,6 +17,10 @@ void IO::write(uint16_t address, uint8_t value) {
             // Serial transfer control
             serial_data[1] = value;
             break;
+
+        case 0xFF44:
+            // LY
+            break;
         default:
             break;
     }
@@ -53,6 +57,10 @@ uint8_t IO::read(uint16_t address) {
             break;
         case 0xFF40:
             // LCDC
+            break;
+        case 0xFF44:
+            // LY
+            return 0x90;
             break;
     }
     return 0;

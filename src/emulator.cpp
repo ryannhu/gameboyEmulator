@@ -13,7 +13,7 @@ Emulator::~Emulator() {
 }
 
 void Emulator::run() {
-    std::cout << "Running emulator" << std::endl;
+    // std::cout << "Running emulator" << std::endl;
     while (graphics->isRunning()) {
         cpu->step();
         graphics->pollEvents();
