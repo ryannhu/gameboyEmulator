@@ -590,22 +590,27 @@ void CPU::opcodeRRA() {
 
 void CPU::opcodeDAA() {
     uint8_t value = a.get();
-    if (!f.getSubtractFlag()) {
-        if (f.getHalfCarryFlag() || (value & 0x0F) > 9) {
-            value += 0x06;
-        }
-        if (f.getCarryFlag() || value > 0x9F) {
-            value += 0x60;
-            f.setCarryFlag(true);
-        }
-    } else {
-        if (f.getHalfCarryFlag()) {
-            value = (value - 6) & 0xFF;
-        }
-        if (f.getCarryFlag()) {
-            value -= 0x60;
-        }
+    
+    uint16_t adjustment = f.getCarryFlag() ? 0x60 : 0x00;
+    if (f.getHalfCarryFlag() || (!f.getSubtractFlag() && (value & 0x0F) > 0x09)) {
+        adjustment |= 0x06;
     }
+
+    if (f.getCarryFlag() || (!f.getSubtractFlag() && value > 0x99)) {
+        adjustment |= 0x60;
+        f.setCarryFlag(true);
+    }
+
+    if (f.getSubtractFlag()) {
+        value -= adjustment;
+    } else {
+        value += adjustment;
+    }
+
+    if ((adjustment & 0x60) == 0x60) {
+        f.setCarryFlag(true);
+    }
+
     f.setZeroFlag(value == 0);
     f.setHalfCarryFlag(false);
     a.set(value);
