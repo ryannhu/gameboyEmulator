@@ -129,7 +129,6 @@ class CPU {
         void opcodeAdcR8N8(Register &r);
         void opcodeAdcHL();
 
-        void opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2);
         void opcodeAddR8R8(Register &r1, Register &r2);
         void opcodeAddR16N8(RegisterPair &rp);
         void opcodeAddR8N8(Register &r);

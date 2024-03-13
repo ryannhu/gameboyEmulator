@@ -24,6 +24,7 @@ class FlagRegister : public Register {
         bool getSubtractFlag();
         bool getHalfCarryFlag();
         bool getCarryFlag();
+        uint8_t getCarryFlagValue();
         void setZeroFlag(const bool value);
         void setSubtractFlag(bool value);
         void setHalfCarryFlag(bool value);

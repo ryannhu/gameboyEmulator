@@ -2,14 +2,6 @@
 
 // add instructions
 
-void CPU::opcodeAddR16R16(RegisterPair &rp1, RegisterPair &rp2) {
-    uint32_t result = rp1.get() + rp2.get();
-    rp1.set(result);
-    f.setCarryFlag(result > 0xFFFF);
-    f.setHalfCarryFlag((rp1.get() & 0x0FFF) + (rp2.get() & 0x0FFF) > 0x0FFF);
-    f.setSubtractFlag(false);
-}
-
 void CPU::opcodeAddR8R8(Register &r1, Register &r2) {
     uint16_t result = r1.get() + r2.get();
     f.setCarryFlag(result > 0xFF);
@@ -52,11 +44,11 @@ void CPU::opcodeAddR8N8(Register &r) {
 void CPU::opcodeAddSPE8() {
     int8_t e8 = emulator.memory->read(pc.get());
     pc.increment();
-    int16_t result = sp.get() + e8;
+    int32_t result = static_cast<int32_t> (sp.get() + e8);
     f.setZeroFlag(false);
     f.setSubtractFlag(false);
     f.setHalfCarryFlag((sp.get() & 0x0F) + (e8 & 0x0F) > 0x0F);
-    f.setCarryFlag((sp.get() & 0xFF) + e8 > 0xFF);
+    f.setCarryFlag(((sp.get() ^ e8 ^ (result & 0xFFFF)) & 0x100) == 0x100);
     sp.set(result);
 }
 
@@ -72,7 +64,7 @@ void CPU::opcodeAddAHL() {
 }
 
 void CPU::opcodeAddHLSP() {
-    uint16_t result = hl.get() + sp.get();
+    uint32_t result = hl.get() + sp.get();
     f.setCarryFlag(result > 0xFFFF);
     f.setHalfCarryFlag((hl.get() & 0x0FFF) + (sp.get() & 0x0FFF) > 0x0FFF);
     f.setSubtractFlag(false);
@@ -82,31 +74,34 @@ void CPU::opcodeAddHLSP() {
 // ADC instructions
 
 void CPU::opcodeAdcR8R8(Register &r1, Register &r2) {
-    uint16_t result = r1.get() + r2.get() + f.getCarryFlag();
+    uint8_t carry = f.getCarryFlagValue();
+    uint32_t result = r1.get() + r2.get() + carry;
     f.setCarryFlag(result > 0xFF);
-    f.setHalfCarryFlag((r1.get() & 0x0F) + (r2.get() & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setHalfCarryFlag((r1.get() & 0x0F) + (r2.get() & 0x0F) + carry > 0x0F);
     f.setSubtractFlag(false);
     r1.set(result);
     f.setZeroFlag(r1.get() == 0);
 }
 
 void CPU::opcodeAdcR8N8(Register &r) {
+    uint8_t carry = f.getCarryFlagValue();
     uint8_t n = emulator.memory->read(pc.get());
     pc.increment();
-    uint16_t result = r.get() + n + f.getCarryFlag();
+    uint32_t result = r.get() + n + carry;
     f.setCarryFlag(result > 0xFF);
-    f.setHalfCarryFlag((r.get() & 0x0F) + (n & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setHalfCarryFlag((r.get() & 0x0F) + (n & 0x0F) + carry > 0x0F);
     f.setSubtractFlag(false);
     r.set(result);
     f.setZeroFlag(r.get() == 0);
 }
 
 void CPU::opcodeAdcHL() {
+    uint8_t carry = f.getCarryFlagValue();
     uint16_t address = hl.get();
     uint8_t value = emulator.memory->read(address);
-    uint16_t result = a.get() + value + f.getCarryFlag();
+    uint32_t result = a.get() + value + carry;
     f.setCarryFlag(result > 0xFF);
-    f.setHalfCarryFlag((a.get() & 0x0F) + (value & 0x0F) + f.getCarryFlag() > 0x0F);
+    f.setHalfCarryFlag((a.get() & 0x0F) + (value & 0x0F) + carry > 0x0F);
     f.setSubtractFlag(false);
     a.set(result);
     f.setZeroFlag(a.get() == 0);
@@ -148,30 +143,33 @@ void CPU::opcodeSubHL() {
 // SBC instructions
 
 void CPU::opcodeSbcR8R8(Register &r1, Register &r2) {
-    uint16_t result = r1.get() - r2.get() - f.getCarryFlag();
+    uint8_t carry = f.getCarryFlagValue();
+    uint16_t result = r1.get() - r2.get() - carry;
     f.setCarryFlag(r1.get() < r2.get() + f.getCarryFlag());
-    f.setHalfCarryFlag((r1.get() & 0x0F) < (r2.get() & 0x0F) + f.getCarryFlag());
+    f.setHalfCarryFlag((r1.get() & 0x0F) < (r2.get() & 0x0F) + carry);
     f.setSubtractFlag(true);
     r1.set(result);
     f.setZeroFlag(r1.get() == 0);
 }
 
 void CPU::opcodeSbcR8N8(Register &r) {
+    uint8_t carry = f.getCarryFlagValue();
     uint8_t n = emulator.memory->read(pc.get());
     pc.increment();
-    uint16_t result = r.get() - n - f.getCarryFlag();
+    uint16_t result = r.get() - n - carry;
     f.setCarryFlag(r.get() < n + f.getCarryFlag());
-    f.setHalfCarryFlag((r.get() & 0x0F) < (n & 0x0F) + f.getCarryFlag());
+    f.setHalfCarryFlag((r.get() & 0x0F) < (n & 0x0F) + carry);
     f.setSubtractFlag(true);
     r.set(result);
     f.setZeroFlag(r.get() == 0);
 }
 
 void CPU::opcodeSbcHL() {
+    uint8_t carry = f.getCarryFlagValue();
     uint16_t address = hl.get();
     uint8_t value = emulator.memory->read(address);
-    uint16_t result = a.get() - value - f.getCarryFlag();
-    f.setCarryFlag(a.get() < value + f.getCarryFlag());
+    uint16_t result = a.get() - value - carry;
+    f.setCarryFlag(a.get() < value + carry);
     f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F) + f.getCarryFlag());
     f.setSubtractFlag(true);
     a.set(result);
@@ -314,11 +312,11 @@ void CPU::opcodeLoadHLSPN8() {
     int8_t e8 = emulator.memory->read(pc.get());
     pc.increment();
     int16_t result = sp.get() + e8;
-    hl.set(result);
     f.setZeroFlag(false);
     f.setSubtractFlag(false);
-    f.setHalfCarryFlag((sp.get() & 0x0F) + (e8 & 0x0F) > 0x0F);
-    f.setCarryFlag((sp.get() & 0xFF) + e8 > 0xFF);
+    f.setHalfCarryFlag(((sp.get() ^ e8 ^ (result & 0xFFFF)) & 0x10) == 0x10);
+    f.setCarryFlag(((sp.get() ^ e8 ^ (result & 0xFFFF)) & 0x100) == 0x100);
+    hl.set(result);
 }
 
 void CPU::opcodeLoadSPHL() {

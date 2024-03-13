@@ -172,7 +172,7 @@ void CPU::executeInstruction() {
             opcodeLoadN16SP();
             break;
         case 0x09: // ADD HL, BC
-            opcodeAddR16R16(hl, bc);
+            opcodeAddHLN16(bc.get());
             break;
         case 0x0A: // LD A, (BC)
             opcodeLoadAR16(bc);
@@ -220,7 +220,7 @@ void CPU::executeInstruction() {
             opcodeJrN16();
             break;
         case 0x19: // ADD HL, DE
-            opcodeAddR16R16(hl, de);
+            opcodeAddHLN16(de.get());
             break;
         case 0x1A: // LD A, (DE)
             opcodeLoadAR16(de);

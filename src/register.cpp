@@ -114,6 +114,11 @@ bool FlagRegister::getCarryFlag() {
     return value & 0x10;
 }
 
+uint8_t FlagRegister::getCarryFlagValue() {
+    bool carry = getCarryFlag();
+    return carry ? 1 : 0;
+}
+
 void FlagRegister::set(uint8_t value) {
     this->value = value & 0xF0;
 }
