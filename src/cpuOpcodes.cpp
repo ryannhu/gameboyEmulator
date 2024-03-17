@@ -170,7 +170,7 @@ void CPU::opcodeSbcHL() {
     uint8_t value = emulator.memory->read(address);
     uint16_t result = a.get() - value - carry;
     f.setCarryFlag(a.get() < value + carry);
-    f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F) + f.getCarryFlag());
+    f.setHalfCarryFlag((a.get() & 0x0F) < (value & 0x0F) + carry);
     f.setSubtractFlag(true);
     a.set(result);
     f.setZeroFlag(a.get() == 0);
@@ -884,7 +884,6 @@ void CPU::opcodeBitU3R8(const uint8_t n, Register &r) {
 void CPU::opcodeBitU3HL(const uint8_t n) {
     uint16_t address = hl.get();
     uint8_t value = emulator.memory->read(address);
-    std::cout << "VALUE: " << std::hex << (int) value << std::endl; 
     f.setZeroFlag(!(value & (1 << n)));
     f.setSubtractFlag(false);
     f.setHalfCarryFlag(true);

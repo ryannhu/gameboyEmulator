@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <iostream>
 #include "emulator.h"
+#include "memory.h"
 
 class Graphics {
 public:
@@ -18,11 +19,21 @@ public:
     bool isRunning();
     void quit();
 
+    void updateDebugScreen();
+
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDL_Texture* gameboyScreenTexture;
     SDL_Surface* gameboyScreenSurface;
+
+    SDL_Window* DebugWindow;
+    SDL_Renderer* DebugRenderer;
+    SDL_Texture* DebugTexture;
+    SDL_Surface* DebugSurface;
+
+    void displayTile(SDL_Surface* surface, uint16_t tileData, uint16_t tile, int xDraw, int yDraw);
+
     Emulator &emulator;
     bool running;
     const int SCREEN_WIDTH = 640;

@@ -1,11 +1,15 @@
 #include "emulator.h"
 #include "cpu.h"
 #include "graphics.h"
+#include "ppu.h"
+#include "timer.h"
 
 Emulator::Emulator(std::shared_ptr<Cartridge> cartridge) : cartridge(cartridge) {
+    timer = std::make_unique<Timer>();
     graphics = std::make_unique<Graphics>(*this);
     cpu = std::make_unique<CPU>(*this);
-    memory = std::make_unique<Memory>(*this);
+    memory = std::make_unique<Memory>(*this, *timer);
+    ppu = std::make_unique<PPU>(*this);
     ticks = 0;
 }
 
@@ -24,5 +28,5 @@ void Emulator::run() {
 
 void Emulator::cycles(int cpuCycles) {
     // TODO: implement
-    
+    int n = cpuCycles * 4;
 }

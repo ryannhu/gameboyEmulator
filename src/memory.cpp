@@ -3,13 +3,16 @@
 #include "emulator.h"
 #include "cpu.h"
 
-Memory::Memory(Emulator &emulator) :
-    emulator(emulator)
+Memory::Memory(Emulator &emulator, Timer &timer) :
+    emulator(emulator),
+    io(timer)
 {
     // initialize memory
     memory.resize(0xFFFF);
     workRam.resize(0x2000);
     highRam.resize(0x80);
+    oam.resize(0xA0);
+    vram.resize(0x2000);
 }
 
 
@@ -18,8 +21,7 @@ uint8_t Memory::read(uint16_t address) {
     if (address < 0x8000) {
         return emulator.cartridge->read(address);
     } else if (address < 0xA000) {
-        //Char map data, vram
-        return 0;
+        return vram.at(address - 0x8000);
     } else if (address < 0xC000) {
         // Cartridge RAM
         return emulator.cartridge->read(address);
@@ -30,12 +32,13 @@ uint8_t Memory::read(uint16_t address) {
         return 0;
     } else if (address < 0xFEA0) {
         // OAM
+        return oam.at(address - 0xFE00);
     } else if (address < 0xFF00) {
         // unusable reserved memory
         return 0;
     } else if (address < 0xFF80) {
         // IO
-        return IO::read(address);
+        return io.read(address);
     } else if (address < 0xFFFF) {
         // high ram
         return highRam.at(address - 0xFF80);
@@ -58,7 +61,7 @@ void Memory::write(uint16_t address, uint8_t value) {
         emulator.cartridge->write(address, value);
         return;
     } else if (address < 0xA000) {
-        //Char map data, vram
+        vram.at(address - 0x8000) = value;
         return;
     } else if (address < 0xC000) {
         // Cartridge RAM
@@ -73,13 +76,14 @@ void Memory::write(uint16_t address, uint8_t value) {
         return;
     } else if (address < 0xFEA0) {
         // OAM (object attribute memory)
-
+        oam.at(address - 0xFE00) = value;
+        return;
     } else if (address < 0xFF00) {
         // unusable reserved memory
 
     } else if (address < 0xFF80) {
         // IO
-        IO::write(address, value);
+        io.write(address, value);
         return;
     } else if (address < 0xFFFF) {
         // high ram

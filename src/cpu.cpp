@@ -33,26 +33,26 @@ CPU::CPU(Emulator &emulator) :
 
 void CPU::step() {
     // print registers
-    std::cout << "A:" << std::setw(2) << std::setfill('0') << std::hex << (int)a.get() << " ";
-    std::cout << "F:" << std::setw(2) << std::setfill('0') << std::hex << (int)f.get() << " ";
-    std::cout << "B:" << std::setw(2) << std::setfill('0') << std::hex << (int)b.get() << " ";
-    std::cout << "C:" << std::setw(2) << std::setfill('0') << std::hex << (int)c.get() << " ";
-    std::cout << "D:" << std::setw(2) << std::setfill('0') << std::hex << (int)d.get() << " ";
-    std::cout << "E:" << std::setw(2) << std::setfill('0') << std::hex << (int)e.get() << " ";
-    std::cout << "H:" << std::setw(2) << std::setfill('0') << std::hex << (int)h.get() << " ";
-    std::cout << "L:" << std::setw(2) << std::setfill('0') << std::hex << (int)l.get() << " ";
-    std::cout << "SP:" << std::setw(4) << std::setfill('0') << std::hex << (int)sp.get() << " ";
-    std::cout << "PC:" << std::setw(4) << std::setfill('0') << std::hex << (int)pc.get() << " ";
-    std::cout << "PCMEM:" << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get()) << ",";
-    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 1) << ",";
-    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 2) << ",";
-    std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 3) << std::endl;
+    // std::cout << "A:" << std::setw(2) << std::setfill('0') << std::hex << (int)a.get() << " ";
+    // std::cout << "F:" << std::setw(2) << std::setfill('0') << std::hex << (int)f.get() << " ";
+    // std::cout << "B:" << std::setw(2) << std::setfill('0') << std::hex << (int)b.get() << " ";
+    // std::cout << "C:" << std::setw(2) << std::setfill('0') << std::hex << (int)c.get() << " ";
+    // std::cout << "D:" << std::setw(2) << std::setfill('0') << std::hex << (int)d.get() << " ";
+    // std::cout << "E:" << std::setw(2) << std::setfill('0') << std::hex << (int)e.get() << " ";
+    // std::cout << "H:" << std::setw(2) << std::setfill('0') << std::hex << (int)h.get() << " ";
+    // std::cout << "L:" << std::setw(2) << std::setfill('0') << std::hex << (int)l.get() << " ";
+    // std::cout << "SP:" << std::setw(4) << std::setfill('0') << std::hex << (int)sp.get() << " ";
+    // std::cout << "PC:" << std::setw(4) << std::setfill('0') << std::hex << (int)pc.get() << " ";
+    // std::cout << "PCMEM:" << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get()) << ",";
+    // std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 1) << ",";
+    // std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 2) << ",";
+    // std::cout << std::setw(2) << std::setfill('0') << std::hex << (int)emulator.memory->read(pc.get() + 3) << std::endl;
 
     // check for interrupts
     handleInterrupts();
 
     debug.update();
-    // debug.print();
+    debug.print();
     if (emulator.memory->read(0xFF02) == 0x81) {
         debugString += emulator.memory->read(0xFF01);
 
@@ -310,7 +310,7 @@ void CPU::executeInstruction() {
             opcodeLoadHLN8();
             break;
         case 0x37: // SCF   
-            f.setCarryFlag(true);
+            opcodeSCF();
             break;
         case 0x38: // JR C, r8
             opcodeJrCCN16(f.getCarryFlag() == 1);
