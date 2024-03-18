@@ -40,6 +40,8 @@ private:
     const int SCREEN_HEIGHT = 288 * 2;
 
     void Delay(uint32_t time);
+
+    const int scale = 4;
 };
 
 #endif

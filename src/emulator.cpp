@@ -21,7 +21,9 @@ void Emulator::run() {
     while (graphics->isRunning()) {
         cpu->step();
         graphics->pollEvents();
-        // graphics->drawGameboyScreen();
+        if (ticks % 2000 == 0) {
+            graphics->drawGameboyScreen();
+        }
         ticks++;
     }
 }

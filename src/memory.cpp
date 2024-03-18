@@ -61,6 +61,7 @@ void Memory::write(uint16_t address, uint8_t value) {
         emulator.cartridge->write(address, value);
         return;
     } else if (address < 0xA000) {
+        std::cout << "Writing to VRAM at address: " << std::hex << address << std::endl;
         vram.at(address - 0x8000) = value;
         return;
     } else if (address < 0xC000) {

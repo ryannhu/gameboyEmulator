@@ -52,7 +52,7 @@ void CPU::step() {
     handleInterrupts();
 
     debug.update();
-    debug.print();
+    // debug.print();
     if (emulator.memory->read(0xFF02) == 0x81) {
         debugString += emulator.memory->read(0xFF01);
 
