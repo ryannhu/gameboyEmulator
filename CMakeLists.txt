@@ -11,7 +11,7 @@ aux_source_directory(src SRC_LIST)
 add_executable(gbEmulator ${SRC_LIST})
 
 # Set the compile options to include the sanitizer
-set(SANITIZE_FLAGS "-fsanitize=address -g")
+set(SANITIZE_FLAGS "-fsanitize=address -g -Wall -Wextra")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SANITIZE_FLAGS}")
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)

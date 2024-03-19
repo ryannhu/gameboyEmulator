@@ -5,9 +5,10 @@
 
 Memory::Memory(Emulator &emulator, Timer &timer) :
     emulator(emulator),
-    io(timer)
+    io(timer, *this)
 {
     // initialize memory
+
     memory.resize(0xFFFF);
     workRam.resize(0x2000);
     highRam.resize(0x80);
@@ -101,3 +102,4 @@ void Memory::write(uint16_t address, uint8_t value) {
     
     // memory[address] = value;
 }
+

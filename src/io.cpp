@@ -1,8 +1,13 @@
 #include "io.h"
+#include "memory.h"
 
-uint8_t IO::serial_data[2] = {0, 0}; // Initialization outside the class definition.
+// TOFIX: serialData should be a member of IO, but there is a segfault when it is
+static uint8_t serialData[2] = {0, 0};
 
-IO::IO(Timer &timer) : timer(timer) {
+IO::IO(Timer &timer, Memory &memory) : 
+    timer(timer),
+    memory(memory)
+{
 }
 
 
@@ -13,11 +18,11 @@ void IO::write(uint16_t address, uint8_t value) {
             break;
         case 0xFF01:
             // Serial transfer data
-            serial_data[0] = value;
+            serialData[0] = value;
             break;
         case 0xFF02:
             // Serial transfer control
-            serial_data[1] = value;
+            serialData[1] = value;
             break;
 
         case 0xFF04:
@@ -44,11 +49,19 @@ void IO::write(uint16_t address, uint8_t value) {
         case 0xFF44:
             // LY
             break;
+
+        case 0xFF46:
+            // DMA transfer
+            dmaTransfer(value); 
+            break;
         default:
             break;
     }
     return;
 }
+
+
+static int ly = 0;
 
 uint8_t IO::read(uint16_t address) {
     switch (address) {
@@ -57,11 +70,11 @@ uint8_t IO::read(uint16_t address) {
             break;
         case 0xFF01:
             // Serial transfer data
-            return serial_data[0];
+            return serialData[0];
             break;
         case 0xFF02:
             // Serial transfer control
-            return serial_data[1];
+            return serialData[1];
             break;
         case 0xFF04:
             // Divider register
@@ -84,8 +97,24 @@ uint8_t IO::read(uint16_t address) {
             break;
         case 0xFF44:
             // LY
-            return 0x90;
+            std::cout << "LY read" << std::endl;
+            return ly++;
             break;
     }
     return 0;
+}
+
+void IO::dmaTransfer(const uint8_t value) {
+    // mutliply value by 0x100
+    uint16_t address = value * 0x100;
+    // todo: implement cycle accurate DMA transfer
+    // need to stall CPU for 4 cycles before transfer   
+    for (uint8_t i = 0x0; i <= 0x9F; ++i) {
+        uint16_t source = address + i;
+        uint16_t destination = 0xFE00 + i;
+
+        // copy information from RAM to OAM
+        // destination is guaranteed to be in OAM range
+        memory.write(destination, memory.read(source));
+    }
 }

@@ -8,7 +8,7 @@
 
 class Memory {
 public:
-    Memory(Emulator &emulator,  Timer &timer);
+    Memory(Emulator &emulator, Timer &timer);
     ~Memory() = default;
 
     uint8_t read(uint16_t address);
@@ -22,6 +22,7 @@ private:
     std::vector<uint8_t> oam;
     std::vector<uint8_t> vram;
     IO io;
+
 };
 
 #endif // MEMORY_H
