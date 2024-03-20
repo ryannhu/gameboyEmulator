@@ -11,12 +11,14 @@ LCD::LCD(Emulator &emulator) : emulator(emulator) {
     scrollX.set(0x00);
     ly.set(0x00);
     lyCompare.set(0x00);
-    bg_palette.set(0xFC);
-    obj_palette0.set(0xFF);
-    obj_palette1.set(0xFF);
+    bgPalette.set(0xFC);
+    objPalette0.set(0xFF);
+    objPalette1.set(0xFF);
     windowY.set(0x00);
     windowX.set(0x00);
     dma.set(0x00);
+
+    currentMode = VideoMode::OAM;
 
     for (int i = 0; i < 4; i++) {
         bgColors[i] = colors[i];
@@ -43,5 +45,7 @@ VideoMode LCD::getVideoMode() {
             return VideoMode::OAM;
         case 3:
             return VideoMode::VRAM;
+        default:
+            throw std::runtime_error("Invalid video mode");
     }
 }

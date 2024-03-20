@@ -50,10 +50,22 @@ class LCD {
         bool objDisplayEnabled();
         bool bgDisplay();
 
+
         VideoMode getVideoMode();
 
         private:
             Emulator &emulator;
+
+            const int linesPerFrame = 144;
+            const int ticksPerLine = 456;
+            const int yResolution = 144;
+            const int xResolution = 160;
+
+            uint32_t currentFrame;
+            uint32_t currentLine;
+            vector<uint32_t> frameBuffer;
+
+            VideoMode currentMode;
 
 
 };

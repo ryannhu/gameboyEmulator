@@ -5,6 +5,7 @@
 #include "oam.h"
 #include "emulator.h"
 #include "memory.h"
+#include "lcd.h"
 
 
 class PPU {
@@ -22,6 +23,7 @@ public:
 
     private:
         Emulator &emulator;
+        LCD &lcd;
 };
 
 #endif // PPU_H

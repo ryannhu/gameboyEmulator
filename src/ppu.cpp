@@ -1,10 +1,12 @@
 #include "ppu.h"
 
-PPU::PPU(Emulator &emulator) : emulator(emulator) {
+PPU::PPU(Emulator &emulator) : emulator(emulator), lcd(*emulator.lcd)
+{
 }
 
 void PPU::tick() {
     // do stuff
+    
 }
 
 void PPU::oamWrite(uint16_t address, uint8_t value) {
