@@ -3,9 +3,8 @@
 #include "emulator.h"
 #include "cpu.h"
 
-Memory::Memory(Emulator &emulator, Timer &timer) :
-    emulator(emulator),
-    io(timer, *this)
+Memory::Memory(Emulator &emulator) :
+    emulator(emulator)
 {
     // initialize memory
 
@@ -39,7 +38,7 @@ uint8_t Memory::read(uint16_t address) {
         return 0;
     } else if (address < 0xFF80) {
         // IO
-        return io.read(address);
+        return emulator.io->read(address);
     } else if (address < 0xFFFF) {
         // high ram
         return highRam.at(address - 0xFF80);
@@ -85,7 +84,7 @@ void Memory::write(uint16_t address, uint8_t value) {
 
     } else if (address < 0xFF80) {
         // IO
-        io.write(address, value);
+        emulator.io->write(address, value);
         return;
     } else if (address < 0xFFFF) {
         // high ram

@@ -23,6 +23,14 @@ void Register::decrement() {
     value--;
 }
 
+void Register::setBit(uint8_t bit, bool value) {
+    if (value) {
+        this->value |= (1 << bit);
+    } else {
+        this->value &= ~(1 << bit);
+    }
+}
+
 void RegisterPair::set(uint16_t value) {
     high.set((value & 0xFF00) >> 8);
     low.set(value & 0x00FF);

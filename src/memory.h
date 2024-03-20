@@ -5,10 +5,11 @@
 #include <vector>
 #include "emulator.h"
 #include "io.h"
+#include "timer.h"
 
 class Memory {
 public:
-    Memory(Emulator &emulator, Timer &timer);
+    Memory(Emulator &emulator);
     ~Memory() = default;
 
     uint8_t read(uint16_t address);
@@ -21,7 +22,6 @@ private:
     std::vector<uint8_t> highRam;
     std::vector<uint8_t> oam;
     std::vector<uint8_t> vram;
-    IO io;
 
 };
 

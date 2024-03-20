@@ -11,6 +11,7 @@ class Register {
         uint8_t get();
         void increment();
         void decrement();
+        void setBit(uint8_t bit, bool value);
     protected:
         uint8_t value;
 };

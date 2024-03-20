@@ -4,22 +4,25 @@
 #include <cstdint>
 #include <vector>
 #include "timer.h"
+#include "emulator.h"
+#include "lcd.h"
 
 using std::vector;
 
-class Memory;
 
 class IO {
     public:
-        IO(Timer &timer, Memory &memory);
+        IO(Emulator &emulator);
         ~IO() = default;
         uint8_t read(uint16_t address);
         void write(uint16_t address, uint8_t value);
     private:
+        Emulator &emulator;
         Timer &timer;
-        Memory &memory;
+
         void dmaTransfer(const uint8_t value);
         
+        vector<uint8_t> serialData;
         uint8_t serialData0;
         uint8_t serialData1;
 };

@@ -1,13 +1,70 @@
 #include "io.h"
 #include "memory.h"
 
-// TOFIX: serialData should be a member of IO, but there is a segfault when it is
-static uint8_t serialData[2] = {0, 0};
 
-IO::IO(Timer &timer, Memory &memory) : 
-    timer(timer),
-    memory(memory)
+IO::IO(Emulator &emulator) : 
+    emulator(emulator),
+    timer(*(emulator.timer))
 {
+    serialData.reserve(2);
+}
+
+
+static int ly = 0;
+
+uint8_t IO::read(uint16_t address) {
+    switch (address) {
+        case 0xFF00:
+            // Joypad
+            break;
+        case 0xFF01:
+            // Serial transfer data
+            return serialData[0];
+            break;
+        case 0xFF02:
+            // Serial transfer control
+            return serialData[1];
+            break;
+        case 0xFF04:
+            // Divider register
+            return timer.divider >> 8;
+            break;
+        case 0xFF05:
+            // Timer counter
+            return timer.TimerCounter.get();
+        case 0xFF06: 
+            // Timer modulo
+            return timer.timerModulo.get();
+        case 0xFF07:
+            // Timer control
+            return timer.timerControl.get();
+        case 0xFF0F:
+            // Interrupt flag
+            break;
+        case 0xFF40:
+            // LCDC
+            break;
+        case 0xFF44:
+            // LY
+            std::cout << "LY read" << std::endl;
+            return ly++;
+            break;
+        case 0xFF46:
+            // DMA transfer
+            break;
+        case 0xFF47:
+            // Background palette
+            break;
+        case 0xFF48:
+            // Object palette 0
+            break;
+        case 0xFF49:
+            // Object palette 1
+            break;
+        default:
+            break;
+    }
+    return 0;
 }
 
 
@@ -54,55 +111,24 @@ void IO::write(uint16_t address, uint8_t value) {
             // DMA transfer
             dmaTransfer(value); 
             break;
+        case 0xFF47:
+            // Background palette
+            emulator.lcd->bgPalette.set(value);
+            break;
+        case 0xFF48:
+            // Object palette 0
+            emulator.lcd->objPalette0.set(value);
+            break;
+        case 0xFF49:
+            // Object palette 1
+            emulator.lcd->objPalette1.set(value);
+            break;
         default:
             break;
     }
     return;
 }
 
-
-static int ly = 0;
-
-uint8_t IO::read(uint16_t address) {
-    switch (address) {
-        case 0xFF00:
-            // Joypad
-            break;
-        case 0xFF01:
-            // Serial transfer data
-            return serialData[0];
-            break;
-        case 0xFF02:
-            // Serial transfer control
-            return serialData[1];
-            break;
-        case 0xFF04:
-            // Divider register
-            return timer.divider >> 8;
-            break;
-        case 0xFF05:
-            // Timer counter
-            return timer.TimerCounter.get();
-        case 0xFF06: 
-            // Timer modulo
-            return timer.timerModulo.get();
-        case 0xFF07:
-            // Timer control
-            return timer.timerControl.get();
-        case 0xFF0F:
-            // Interrupt flag
-            break;
-        case 0xFF40:
-            // LCDC
-            break;
-        case 0xFF44:
-            // LY
-            std::cout << "LY read" << std::endl;
-            return ly++;
-            break;
-    }
-    return 0;
-}
 
 void IO::dmaTransfer(const uint8_t value) {
     // mutliply value by 0x100
@@ -115,6 +141,6 @@ void IO::dmaTransfer(const uint8_t value) {
 
         // copy information from RAM to OAM
         // destination is guaranteed to be in OAM range
-        memory.write(destination, memory.read(source));
+        emulator.memory->write(destination, emulator.memory->read(source));
     }
 }

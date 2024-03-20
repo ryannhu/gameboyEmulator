@@ -3,13 +3,16 @@
 #include "graphics.h"
 #include "ppu.h"
 #include "timer.h"
+#include "lcd.h"
 
 Emulator::Emulator(std::shared_ptr<Cartridge> cartridge) : cartridge(cartridge) {
+    lcd = std::make_unique<LCD>(*this);
     timer = std::make_unique<Timer>();
+    io = std::make_unique<IO>(*this);
     graphics = std::make_unique<Graphics>(*this);
-    cpu = std::make_unique<CPU>(*this);
-    memory = std::make_unique<Memory>(*this, *timer);
     ppu = std::make_unique<PPU>(*this);
+    memory = std::make_unique<Memory>(*this);
+    cpu = std::make_unique<CPU>(*this);
     ticks = 0;
 }
 
